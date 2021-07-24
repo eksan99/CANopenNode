@@ -49,10 +49,10 @@ namespace EDSSharp
                     string infile = argskvp["--infile"];
                     string outfile = argskvp["--outfile"];
 
-                    ExporterFactory.Exporter type = ExporterFactory.Exporter.CANOPENNODE_LEGACY; //sensible default
+                    ExporterFactory.Exporter type = ExporterFactory.Exporter.SOURCE_CANOPENNODE_LEGACY; //sensible default
 
                     if (argskvp["--type"].IndexOf("4") > 0)
-                        type = ExporterFactory.Exporter.CANOPENNODE_V4;
+                        type = ExporterFactory.Exporter.SOURCE_CANOPENNODE_V4;
 
                     switch (Path.GetExtension(infile).ToLower())
                     {
@@ -106,9 +106,8 @@ namespace EDSSharp
 
             Warnings.warning_list.Clear();
 
-            IExporter exporter = ExporterFactory.getExporter(type);
-
-            exporter.export(savePath, Path.GetFileNameWithoutExtension(outpath), gitversion, eds, odname);
+            IExporter exporter = ExporterFactory.getExporter(type, outpath, eds, gitversion);
+            exporter.export();
 
             foreach(string warning in Warnings.warning_list)
             {

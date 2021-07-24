@@ -13,11 +13,20 @@ namespace ODEditor
 {
     public partial class Preferences : Form
     {
+
+        private static bool ExcludeHidden(ExporterFactory.Exporter obj)
+        {
+            return obj.ToString().Contains("SOURCE_");
+        }
+
+
         public Preferences()
         {
             InitializeComponent();
 
-            comboBox_exporter.DataSource = Enum.GetValues(typeof(ExporterFactory.Exporter));
+            Predicate<ExporterFactory.Exporter> excludeHidden = ExcludeHidden;
+
+            comboBox_exporter.DataSource = Array.FindAll<ExporterFactory.Exporter> ((ExporterFactory.Exporter[])Enum.GetValues(typeof(ExporterFactory.Exporter)), excludeHidden);
 
             comboBox_exporter.SelectedItem = (ExporterFactory.Exporter)Properties.Settings.Default.ExporterType;
 

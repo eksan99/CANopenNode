@@ -42,7 +42,7 @@ namespace ODEditor
         public DeviceODView()
         {
             ExporterFactory.Exporter type = (ExporterFactory.Exporter)Properties.Settings.Default.ExporterType;
-            CANopenNodeV4 = (type == ExporterFactory.Exporter.CANOPENNODE_V4);
+            CANopenNodeV4 = (type == ExporterFactory.Exporter.SOURCE_CANOPENNODE_V4);
 
             InitializeComponent();
 

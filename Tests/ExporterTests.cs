@@ -7,9 +7,16 @@ namespace Tests
     
     public class ExporterTests : CanOpenNodeExporter
     {
+        public ExporterTests() : base("", new EDSsharp(), "")
+        {
+        }
+
         [Fact]
         public void Test_cname_conversion()
         {
+            
+            CanOpenNodeExporter exporter = new CanOpenNodeExporter("", new EDSsharp(), "");
+
             ODentry od = new ODentry();
 
             if (make_cname("axle 0 wheel right controlword",od) != "axle0WheelRightControlword")
@@ -62,12 +69,11 @@ namespace Tests
                 Index = 0x2000
             };
 
-            eds = new EDSsharp
-            {
-                ods = new System.Collections.Generic.SortedDictionary<ushort, ODentry>()
-            };
 
-            eds.ods.Add(0x2000, od);
+            Eds.ods = new System.Collections.Generic.SortedDictionary<ushort, ODentry>();
+            
+
+            Eds.ods.Add(0x2000, od);
 
             prewalkArrays();
             od.subobjects.Add(0x00, new ODentry("No Entries", 0x00, DataType.UNSIGNED8, "4", EDSsharp.AccessType.ro, PDOMappingType.no));
@@ -91,10 +97,8 @@ namespace Tests
         [Fact]
         public void TestArrayNoEntries()
         {
-            eds = new EDSsharp
-            {
-                ods = new System.Collections.Generic.SortedDictionary<ushort, ODentry>()
-            };
+            Eds.ods = new System.Collections.Generic.SortedDictionary<ushort, ODentry>();
+            
 
             ODentry od = new ODentry
             {
@@ -105,7 +109,7 @@ namespace Tests
                 Index = 0x1011
             };
 
-            eds.ods.Add(0x1011, od);
+            Eds.ods.Add(0x1011, od);
 
             od.subobjects.Add(0x00, new ODentry("No Entries", 0x00, DataType.UNSIGNED8, "0x7f", EDSsharp.AccessType.ro, PDOMappingType.no));
             od.subobjects.Add(0x01, new ODentry("LINE1", 0x01, DataType.UNSIGNED32, "0x01", EDSsharp.AccessType.ro, PDOMappingType.optional));
@@ -124,7 +128,7 @@ namespace Tests
                 Index = 0x2000
             };
 
-            eds.ods.Add(0x2000, od);
+            Eds.ods.Add(0x2000, od);
 
             od.subobjects.Add(0x00, new ODentry("No Entries", 0x00, DataType.UNSIGNED8, "0x7f", EDSsharp.AccessType.ro, PDOMappingType.no));
             od.subobjects.Add(0x01, new ODentry("LINE1", 0x01, DataType.UNSIGNED32, "0x01", EDSsharp.AccessType.ro, PDOMappingType.optional));
@@ -143,7 +147,7 @@ namespace Tests
                 Index = 0x1003
             };
 
-            eds.ods.Add(0x1003, od);
+            Eds.ods.Add(0x1003, od);
 
             od.subobjects.Add(0x00, new ODentry("No Entries", 0x00, DataType.UNSIGNED8, "0x00", EDSsharp.AccessType.ro, PDOMappingType.no));
             od.subobjects.Add(0x01, new ODentry("LINE1", 0x01, DataType.UNSIGNED32, "0x01", EDSsharp.AccessType.ro, PDOMappingType.optional));
@@ -184,13 +188,11 @@ namespace Tests
                 Index = 0x2001
             };
 
-            eds = new EDSsharp
-            {
-                ods = new System.Collections.Generic.SortedDictionary<ushort, ODentry>()
-            };
+            Eds.ods = new System.Collections.Generic.SortedDictionary<ushort, ODentry>();
+            
 
-            eds.ods.Add(0x2000, od);
-            eds.ods.Add(0x2001, od2);
+            Eds.ods.Add(0x2000, od);
+            Eds.ods.Add(0x2001, od2);
 
             prewalkArrays();
 

@@ -209,13 +209,11 @@ namespace ODEditor
         {
             Warnings.warning_list.Clear();
 
-            IExporter exporter = ExporterFactory.getExporter(exporterType);
+            IExporter exporter = ExporterFactory.getExporter(exporterType, FileName, dv.eds, this.gitVersion);
 
             try
             {
-                string savePath = Path.GetDirectoryName(FileName);
-                string baseFileName = Path.GetFileNameWithoutExtension(FileName);
-                exporter.export(savePath, baseFileName, this.gitVersion, dv.eds, baseFileName);
+                exporter.export();
             }
             catch (Exception ex)
             {
@@ -245,7 +243,7 @@ namespace ODEditor
                                         ? Path.GetDirectoryName(dv.eds.ODfilename)
                                         : Path.GetDirectoryName(dv.eds.projectFilename);
                 sfd.RestoreDirectory = true;
-                sfd.FileName = (type == ExporterFactory.Exporter.CANOPENNODE_V4) ? "OD.h" : "CO_OD.c";
+                sfd.FileName = (type == ExporterFactory.Exporter.SOURCE_CANOPENNODE_V4) ? "OD.h" : "CO_OD.c";
                 sfd.Filter = "CANopenNode (*.h, *.c)|*.h";
 
                 DialogResult result = sfd.ShowDialog();
@@ -253,7 +251,7 @@ namespace ODEditor
                 if (result == DialogResult.OK)
                 {
                     dv.eds.ODfilename = sfd.FileName;
-                    dv.eds.ODfileVersion = (type == ExporterFactory.Exporter.CANOPENNODE_V4) ? "V4" : "V1";
+                    dv.eds.ODfileVersion = (type == ExporterFactory.Exporter.SOURCE_CANOPENNODE_V4) ? "V4" : "V1";
 
                     exportCanOpenNode(dv, sfd.FileName, type);
                 }
@@ -575,8 +573,11 @@ namespace ODEditor
                     break;
 
                 case ".md":
-                    DocumentationGen docgen = new DocumentationGen();
-                    docgen.genmddoc(FileName, dv.eds, this.gitVersion);
+                    
+                    IExporter exporter = ExporterFactory.getExporter(ExporterFactory.Exporter.DOCUMENT_MD, FileName, dv.eds, this.gitVersion);
+                    exporter.export();
+
+                    
                     dv.eds.mdfilename = FileName;
                     break;
 
@@ -1001,22 +1002,30 @@ namespace ODEditor
                         System.IO.File.Copy(csspath, dir + Path.DirectorySeparatorChar + "style.css");
                     }
 
-                    string temp = dir + Path.DirectorySeparatorChar + "documentation.html";
-                    string temp2 = dir + Path.DirectorySeparatorChar + "documentation.md";
+
+                    
 
                     this.UseWaitCursor = true;
 
-                    DocumentationGen docgen = new DocumentationGen();
-                    docgen.genhtmldoc(temp, dv.eds);
-                    docgen.genmddoc(temp2, dv.eds, this.gitVersion);
-                    System.Diagnostics.Process.Start("file://" + temp2);
+                    string htmlFileName = dir + Path.DirectorySeparatorChar + "documentation.html";
+                    IExporter htmlExporter = ExporterFactory.getExporter(ExporterFactory.Exporter.DOCUMENT_HTML, htmlFileName, dv.eds, this.gitVersion);
+                    htmlExporter.export();
+
+
+                    string mdFileName = dir + Path.DirectorySeparatorChar + "documentation.md";
+                    IExporter mdExporter = ExporterFactory.getExporter(ExporterFactory.Exporter.DOCUMENT_MD, mdFileName, dv.eds, this.gitVersion);
+                    mdExporter.export();
+
+                    
+                    
+                    System.Diagnostics.Process.Start("file://" + mdExporter.LastExportedFile);
                     if (IsRunningOnMono())
                     {
-                        System.Diagnostics.Process.Start("file://" + temp);
+                        System.Diagnostics.Process.Start("file://" + htmlExporter.LastExportedFile);
                     }
                     else
                     {
-                        ReportView rv = new ReportView(temp);
+                        ReportView rv = new ReportView(htmlExporter.LastExportedFile);
                         rv.Show();
                     }
 
@@ -1067,15 +1076,16 @@ namespace ODEditor
 
                 if (dv.eds.mdfilename != null && dv.eds.mdfilename != "")
                 {
-                    DocumentationGen docgen = new DocumentationGen();
-                    docgen.genmddoc(dv.eds.mdfilename, dv.eds, this.gitVersion);
+                    IExporter exporter = ExporterFactory.getExporter(ExporterFactory.Exporter.DOCUMENT_MD, dv.eds.mdfilename, dv.eds, this.gitVersion);
+                    exporter.export();
+                    
                     cnt++;
                 }
 
                 if (dv.eds.ODfilename != null && dv.eds.ODfilename != "")
                 {
                     ExporterFactory.Exporter type = (ExporterFactory.Exporter)Properties.Settings.Default.ExporterType;
-                    string version = (type == ExporterFactory.Exporter.CANOPENNODE_V4) ? "V4" : "V1";
+                    string version = (type == ExporterFactory.Exporter.SOURCE_CANOPENNODE_V4) ? "V4" : "V1";
 
                     if (dv.eds.ODfileVersion == version)
                     {

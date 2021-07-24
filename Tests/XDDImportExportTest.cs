@@ -6,15 +6,19 @@ namespace Tests
 {
     public class XddImportExportTest : CanOpenNodeExporter
     {
+
+        public XddImportExportTest() : base("", new EDSsharp(), "")
+        {
+        }
+
+
         /// </summary>
         [Fact]
         public void TestImportExportVar()
         {
 
-            eds = new EDSsharp
-            {
-                ods = new System.Collections.Generic.SortedDictionary<ushort, ODentry>()
-            };
+            Eds.ods = new System.Collections.Generic.SortedDictionary<ushort, ODentry>();
+            
 
             ODentry od = new ODentry
             {
@@ -27,15 +31,17 @@ namespace Tests
             };
             od.prop.CO_flagsPDO = true;
 
-            eds.ods.Add(0x2000, od);
+            Eds.ods.Add(0x2000, od);
 
             string tempfile = System.IO.Path.GetTempFileName();
             CanOpenXDD coxdd = new CanOpenXDD();
-            coxdd.writeXML(tempfile, eds);
-            CanOpenXDD coxml = new CanOpenXDD();
-            eds = coxml.readXML(tempfile);
+            coxdd.writeXML(tempfile, Eds);
 
-            od = eds.ods[0x2000];
+            CanOpenXDD coxml = new CanOpenXDD();
+
+            EDSsharp localEds = coxml.readXML(tempfile);
+
+            od = localEds.ods[0x2000];
 
             if (od.prop.CO_flagsPDO == false)
                 throw new Exception("TPDODetect not set in EDS for VAR");
@@ -50,10 +56,8 @@ namespace Tests
         public void TestImportExportRecord()
         {
 
-            eds = new EDSsharp
-            {
-                ods = new System.Collections.Generic.SortedDictionary<ushort, ODentry>()
-            };
+            Eds.ods = new System.Collections.Generic.SortedDictionary<ushort, ODentry>();
+            
 
             ODentry od = new ODentry
             {
@@ -85,15 +89,17 @@ namespace Tests
 
             od.subobjects.Add(0x01, sub);
 
-            eds.ods.Add(0x2000, od);
+            Eds.ods.Add(0x2000, od);
 
             string tempfile = System.IO.Path.GetTempFileName();
             CanOpenXDD coxdd = new CanOpenXDD();
-            coxdd.writeXML(tempfile, eds);
+            coxdd.writeXML(tempfile, Eds);
             CanOpenXDD coxml = new CanOpenXDD();
-            eds = coxml.readXML(tempfile);
 
-            od = eds.ods[0x2000];
+
+            EDSsharp localEeds = coxml.readXML(tempfile);
+
+            od = localEeds.ods[0x2000];
 
             if (od.subobjects[1].prop.CO_flagsPDO == false)
                 throw new Exception("TPDODetect not set in EDS for REC");
@@ -112,10 +118,8 @@ namespace Tests
             // they all must be the same
             // and they should not exist on the parent object.
 
-            eds = new EDSsharp
-            {
-                ods = new System.Collections.Generic.SortedDictionary<ushort, ODentry>()
-            };
+            Eds.ods = new System.Collections.Generic.SortedDictionary<ushort, ODentry>();
+            
 
             ODentry od = new ODentry
             {
@@ -163,15 +167,16 @@ namespace Tests
    
             od.subobjects.Add(0x02, sub);
 
-            eds.ods.Add(0x2000, od);
+            Eds.ods.Add(0x2000, od);
 
             string tempfile = System.IO.Path.GetTempFileName();
             CanOpenXDD coxdd = new CanOpenXDD();
-            coxdd.writeXML(tempfile, eds);
+            coxdd.writeXML(tempfile, Eds);
             CanOpenXDD coxml = new CanOpenXDD();
-            eds = coxml.readXML(tempfile);
+            
+            EDSsharp localEds = coxml.readXML(tempfile);
 
-            od = eds.ods[0x2000];
+            od = localEds.ods[0x2000];
 
             if (od.subobjects[1].prop.CO_flagsPDO == false)
                 throw new Exception("TPDODetect not set in EDS for ARRAY");

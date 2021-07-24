@@ -33,9 +33,9 @@ namespace libEDSsharp
     public class CanOpenNodeExporter : IExporter
     {
 
-        private string folderpath;
-        private string gitVersion;
-        protected EDSsharp eds;
+       
+        
+        
 
         private int enabledcount = 0;
 
@@ -50,6 +50,11 @@ namespace libEDSsharp
         private byte maxTXmappingsize = 0;
         ODentry maxRXmappingsOD=null;
         ODentry maxTXmappingsOD=null;
+
+
+        public CanOpenNodeExporter(string fileName, EDSsharp eds, string gitVersion) : base(fileName, eds, gitVersion)
+        {
+        }
 
         public void prepareCanOpenNames()
         {
@@ -82,14 +87,14 @@ namespace libEDSsharp
         }
 
 
-        public void export(string folderpath, string filename, string gitVersion, EDSsharp eds,string odname)
+        override public void export()
         {
-            this.folderpath = folderpath;
-            this.gitVersion = gitVersion;
-            this.eds = eds;
+            
+            
+            
 
 
-            enabledcount = eds.GetNoEnabledObjects();
+            enabledcount = Eds.GetNoEnabledObjects();
 
             prepareCanOpenNames();
 
@@ -100,8 +105,16 @@ namespace libEDSsharp
 
             prewalkArrays();
 
-            export_h(filename);
-            export_c(filename);
+
+
+
+            string hFileName = GetFileNameWithExtension("h");
+            export_h(hFileName);
+            LastExportedFile = hFileName;
+
+            string cFileName = GetFileNameWithExtension("c");
+            export_c(cFileName);
+            LastExportedFile = cFileName;
 
         }
 
@@ -114,9 +127,9 @@ namespace libEDSsharp
 
             for (UInt16 idx = 0x1800; idx < 0x1900; idx++)
             {
-                if (eds.ods.ContainsKey(idx))
+                if (Eds.ods.ContainsKey(idx))
                 {
-                    ODentry od = eds.ods[idx];
+                    ODentry od = Eds.ods[idx];
 
                     if (!od.Containssubindex(0x04))
                     {
@@ -133,7 +146,7 @@ namespace libEDSsharp
             UInt16 lowest = 0xffff;
             UInt16 highest = 0x0000;
 
-            foreach (KeyValuePair<UInt16, ODentry> kvp in eds.ods)
+            foreach (KeyValuePair<UInt16, ODentry> kvp in Eds.ods)
             {
 
                 if (kvp.Value.prop.CO_disabled == true)
@@ -161,7 +174,7 @@ namespace libEDSsharp
         protected void prewalkArrays()
         {
 
-            foreach (KeyValuePair<UInt16, ODentry> kvp in eds.ods)
+            foreach (KeyValuePair<UInt16, ODentry> kvp in Eds.ods)
             {
                 ODentry od = kvp.Value;
                 if (od.prop.CO_disabled == true)
@@ -204,7 +217,7 @@ namespace libEDSsharp
                     string targetname = kvp.Key;
                     UInt16 lowest=0xffff;
                     UInt16 highest=0x0000;
-                    foreach (KeyValuePair<UInt16, ODentry> kvp2 in eds.ods)
+                    foreach (KeyValuePair<UInt16, ODentry> kvp2 in Eds.ods)
                     {
 
                         string name = make_cname(kvp2.Value.parameter_name,kvp2.Value);
@@ -236,28 +249,28 @@ namespace libEDSsharp
 
             for (ushort x=0x1600;x<0x1800;x++)
             {
-                if(eds.ods.ContainsKey(x))
+                if(Eds.ods.ContainsKey(x))
                 {
-                    byte maxcount = EDSsharp.ConvertToByte(eds.ods[x].subobjects[0].defaultvalue);
+                    byte maxcount = EDSsharp.ConvertToByte(Eds.ods[x].subobjects[0].defaultvalue);
 
                     if(maxcount > maxRXmappingsize)
                     {
                         maxRXmappingsize = maxcount;
-                        maxRXmappingsOD = eds.ods[x];
+                        maxRXmappingsOD = Eds.ods[x];
                     }
                 }
             }
 
             for (ushort x = 0x1a00; x < 0x1c00; x++)
             {
-                if (eds.ods.ContainsKey(x))
+                if (Eds.ods.ContainsKey(x))
                 {
-                    byte maxcount = EDSsharp.ConvertToByte(eds.ods[x].subobjects[0].defaultvalue);
+                    byte maxcount = EDSsharp.ConvertToByte(Eds.ods[x].subobjects[0].defaultvalue);
 
                     if (maxcount > maxTXmappingsize)
                     {
                         maxTXmappingsize = maxcount;
-                        maxTXmappingsOD = eds.ods[x];
+                        maxTXmappingsOD = Eds.ods[x];
                     }
                 }
             }
@@ -272,7 +285,7 @@ namespace libEDSsharp
 
             lastname = "";
 
-            foreach (KeyValuePair<UInt16, ODentry> kvp in eds.ods)
+            foreach (KeyValuePair<UInt16, ODentry> kvp in Eds.ods)
             {
                 ODentry od = kvp.Value;
 
@@ -313,7 +326,7 @@ namespace libEDSsharp
             else
             {
                 //fixme why is this not od.datatype?
-                DataType t = eds.Getdatatype(od);
+                DataType t = Eds.Getdatatype(od);
 
                 //If it not a defined type, and it probably is not for a REC, we must generate a name, this is
                 //related to the previous code that generated the actual structures.
@@ -402,15 +415,14 @@ namespace libEDSsharp
     https://github.com/CANopenNode/CANopenEditor
 
     DON'T EDIT THIS FILE MANUALLY !!!!
-*******************************************************************************/", this.gitVersion));
+*******************************************************************************/", GitVersion));
         }
 
         private void export_h(string filename)
         {
-            if (filename == "")
-                filename = "CO_OD";
+            
 
-            StreamWriter file = new StreamWriter(folderpath + Path.DirectorySeparatorChar + filename + ".h");
+            StreamWriter file = new StreamWriter(filename);
 
             file.WriteLine("// clang-format off");
             addHeader(file);
@@ -446,21 +458,21 @@ namespace libEDSsharp
 
             file.WriteLine("/*******************************************************************************");
             file.WriteLine("   FILE INFO:");
-            file.WriteLine(string.Format("      FileName:     {0}", Path.GetFileName(eds.projectFilename)));
-            file.WriteLine(string.Format("      FileVersion:  {0}", eds.fi.FileVersion));
-            file.WriteLine(string.Format("      CreationTime: {0}", eds.fi.CreationTime));
-            file.WriteLine(string.Format("      CreationDate: {0}", eds.fi.CreationDate));
-            file.WriteLine(string.Format("      CreatedBy:    {0}", eds.fi.CreatedBy));
+            file.WriteLine(string.Format("      FileName:     {0}", Path.GetFileName(Eds.projectFilename)));
+            file.WriteLine(string.Format("      FileVersion:  {0}", Eds.fi.FileVersion));
+            file.WriteLine(string.Format("      CreationTime: {0}", Eds.fi.CreationTime));
+            file.WriteLine(string.Format("      CreationDate: {0}", Eds.fi.CreationDate));
+            file.WriteLine(string.Format("      CreatedBy:    {0}", Eds.fi.CreatedBy));
             file.WriteLine("*******************************************************************************/");
             file.WriteLine("");
             file.WriteLine("");
 
             file.WriteLine("/*******************************************************************************");
             file.WriteLine("   DEVICE INFO:");
-            file.WriteLine(string.Format("      VendorName:     {0}", eds.di.VendorName));
-            file.WriteLine(string.Format("      VendorNumber:   {0}", eds.di.VendorNumber));
-            file.WriteLine(string.Format("      ProductName:    {0}", eds.di.ProductName));
-            file.WriteLine(string.Format("      ProductNumber:  {0}", eds.di.ProductNumber));
+            file.WriteLine(string.Format("      VendorName:     {0}", Eds.di.VendorName));
+            file.WriteLine(string.Format("      VendorNumber:   {0}", Eds.di.VendorNumber));
+            file.WriteLine(string.Format("      ProductName:    {0}", Eds.di.ProductName));
+            file.WriteLine(string.Format("      ProductNumber:  {0}", Eds.di.ProductNumber));
             file.WriteLine("*******************************************************************************/");
             file.WriteLine("");
             file.WriteLine("");
@@ -482,13 +494,13 @@ namespace libEDSsharp
             file.WriteLine(string.Format("  #define CO_NO_SRDO                     {0}   //Associated objects: 1301-1341, 1381-13C0", noSRDO));
 
             int lssServer = 0;
-            if (eds.di.LSS_Supported == true)
+            if (Eds.di.LSS_Supported == true)
             {
                 lssServer = 1;
             }
             file.WriteLine(string.Format("  #define CO_NO_LSS_SERVER               {0}   //LSS Slave", lssServer));
             int lssClient = 0;
-            if (eds.di.LSS_Master == true)
+            if (Eds.di.LSS_Master == true)
             {
                 lssClient = 1;
             }
@@ -498,9 +510,9 @@ namespace libEDSsharp
             file.WriteLine(string.Format("  #define CO_NO_TPDO                     {0}   //Associated objects: 18xx, 1Axx", noTXpdos));
 
             bool ismaster = false;
-            if(eds.ods.ContainsKey(0x1f80))
+            if(Eds.ods.ContainsKey(0x1f80))
             {
-                ODentry master = eds.ods[0x1f80];
+                ODentry master = Eds.ods[0x1f80];
 
                 // we could do with a cut down function that returns a value rather than a string
                 string meh = formatvaluewithdatatype(master.defaultvalue, master.datatype);
@@ -533,15 +545,15 @@ namespace libEDSsharp
             List<string> structnamelist = new List<string>();
 
             /* make sure, we have all storage groups */
-            eds.CO_storageGroups.Add("ROM");
-            eds.CO_storageGroups.Add("EEPROM");
+            Eds.CO_storageGroups.Add("ROM");
+            Eds.CO_storageGroups.Add("EEPROM");
 
-            foreach (KeyValuePair<UInt16, ODentry> kvp in eds.ods)
+            foreach (KeyValuePair<UInt16, ODentry> kvp in Eds.ods)
             {
                 ODentry od = kvp.Value;
 
                 /* make sure, we have all storage groups */
-                eds.CO_storageGroups.Add(od.prop.CO_storageGroup);
+                Eds.CO_storageGroups.Add(od.prop.CO_storageGroup);
 
                 if (od.objecttype != ObjectType.REC)
                     continue;
@@ -613,7 +625,7 @@ namespace libEDSsharp
 
             //FIXME how can we get rid of that redundancy?
 
-            foreach (KeyValuePair<UInt16, ODentry> kvp in eds.ods)
+            foreach (KeyValuePair<UInt16, ODentry> kvp in Eds.ods)
             {
 
                 ODentry od = kvp.Value;
@@ -621,7 +633,7 @@ namespace libEDSsharp
                 if (od.prop.CO_disabled == true)
                     continue;
 
-                DataType t = eds.Getdatatype(od);
+                DataType t = Eds.Getdatatype(od);
 
 
                 switch (od.objecttype)
@@ -681,7 +693,7 @@ namespace libEDSsharp
 *******************************************************************************/
 #define  CO_OD_FIRST_LAST_WORD     0x55 //Any value from 0x01 to 0xFE. If changed, EEPROM will be reinitialized.
 ");
-            foreach (string location in eds.CO_storageGroups)
+            foreach (string location in Eds.CO_storageGroups)
             {
                 if (location == "Unused")
                 {
@@ -708,7 +720,7 @@ namespace libEDSsharp
 
             file.WriteLine(@"/***** Declaration of Object Dictionary variables *****************************/");
 
-            foreach (string location in eds.CO_storageGroups)
+            foreach (string location in Eds.CO_storageGroups)
             {
                 if (location == "Unused")
                 {
@@ -729,7 +741,7 @@ file.WriteLine(@"/**************************************************************
 
             List<string> constructed_rec_types = new List<string>();
 
-            foreach (KeyValuePair<UInt16, ODentry> kvp in eds.ods)
+            foreach (KeyValuePair<UInt16, ODentry> kvp in Eds.ods)
             {
 
 
@@ -740,7 +752,7 @@ file.WriteLine(@"/**************************************************************
 
                 string loc = "CO_OD_" + od.prop.CO_storageGroup;
 
-                DataType t = eds.Getdatatype(od);
+                DataType t = Eds.Getdatatype(od);
 
 
                 switch (od.objecttype)
@@ -830,9 +842,8 @@ file.WriteLine(@"/**************************************************************
 
         private void export_c(string filename)
         {
-            if (filename == "")
-                filename =  "CO_OD";
-            StreamWriter file = new StreamWriter(folderpath + Path.DirectorySeparatorChar + filename + ".c");
+            
+            StreamWriter file = new StreamWriter(filename);
 
             file.WriteLine("// clang-format off");
             addHeader(file);
@@ -854,7 +865,7 @@ file.WriteLine(@"/**************************************************************
 *******************************************************************************/
 
 ");
-            foreach (string location in eds.CO_storageGroups)
+            foreach (string location in Eds.CO_storageGroups)
             {
                 if (location == "Unused")
                 {
@@ -915,7 +926,7 @@ const CO_OD_entry_t CO_OD[CO_OD_NoOfElements] = {
 
             StringBuilder returndata = new StringBuilder();
 
-            foreach (KeyValuePair<UInt16, ODentry> kvp in eds.ods)
+            foreach (KeyValuePair<UInt16, ODentry> kvp in Eds.ods)
             {
 
                 ODentry od = kvp.Value;
@@ -1178,7 +1189,7 @@ const CO_OD_entry_t CO_OD[CO_OD_NoOfElements] = {
                 if (nodeidreplace)
                 {
                     UInt32 data = Convert.ToUInt32(defaultvalue, nobase);
-                    data += eds.NodeId;
+                    data += Eds.NodeId;
                     defaultvalue = string.Format("0x{0:X}", data);
                     nobase = 16;
                 }
@@ -1397,7 +1408,7 @@ const CO_OD_entry_t CO_OD[CO_OD_NoOfElements] = {
             bool arrayopen = false;
             int arrayindex = 0;
 
-            foreach (KeyValuePair<UInt16, ODentry> kvp in eds.ods)
+            foreach (KeyValuePair<UInt16, ODentry> kvp in Eds.ods)
             {
                 ODentry od = kvp.Value;
 
@@ -1488,6 +1499,8 @@ const CO_OD_entry_t CO_OD[CO_OD_NoOfElements] = {
         int noGFC = 0;
         int noSRDO = 0;
 
+
+
         void countPDOS()
         {
             noRXpdos = 0;
@@ -1498,13 +1511,13 @@ const CO_OD_entry_t CO_OD[CO_OD_NoOfElements] = {
 
             //check the SYNC feature
             int checkfeature = 0;
-            if (eds.ods.ContainsKey(0x1005))
+            if (Eds.ods.ContainsKey(0x1005))
                 checkfeature++;
-            if (eds.ods.ContainsKey(0x1006))
+            if (Eds.ods.ContainsKey(0x1006))
                 checkfeature++;
-            if (eds.ods.ContainsKey(0x1007))
+            if (Eds.ods.ContainsKey(0x1007))
                 checkfeature++;
-            if (eds.ods.ContainsKey(0x1019))
+            if (Eds.ods.ContainsKey(0x1019))
                 checkfeature++;
             if (checkfeature == 4)
             {
@@ -1517,11 +1530,11 @@ const CO_OD_entry_t CO_OD[CO_OD_NoOfElements] = {
 
             //EMCY
             checkfeature = 0;
-            if (eds.ods.ContainsKey(0x1003))
+            if (Eds.ods.ContainsKey(0x1003))
                 checkfeature++;
-            if (eds.ods.ContainsKey(0x1014))
+            if (Eds.ods.ContainsKey(0x1014))
                 checkfeature++;
-            if (eds.ods.ContainsKey(0x1015))
+            if (Eds.ods.ContainsKey(0x1015))
                 checkfeature++;
             if (checkfeature == 3)
             {
@@ -1533,7 +1546,7 @@ const CO_OD_entry_t CO_OD[CO_OD_NoOfElements] = {
             }
 
             //TIME
-            if (eds.ods.ContainsKey(0x1012))
+            if (Eds.ods.ContainsKey(0x1012))
             {
                 noTIME = 1;
             }
@@ -1544,13 +1557,13 @@ const CO_OD_entry_t CO_OD[CO_OD_NoOfElements] = {
 
             //NMT CLIENT
             checkfeature = 0;
-            if (eds.ods.ContainsKey(0x1f80))
+            if (Eds.ods.ContainsKey(0x1f80))
                 checkfeature++;
-            if (eds.ods.ContainsKey(0x1029))
+            if (Eds.ods.ContainsKey(0x1029))
                 checkfeature++;
-            if (eds.ods.ContainsKey(0x1017))
+            if (Eds.ods.ContainsKey(0x1017))
                 checkfeature++;
-            if (eds.ods.ContainsKey(0x1001))
+            if (Eds.ods.ContainsKey(0x1001))
                 checkfeature++;
             if (checkfeature == 4)
             {
@@ -1561,7 +1574,7 @@ const CO_OD_entry_t CO_OD[CO_OD_NoOfElements] = {
                 Warnings.AddWarning("BUILD WARNING, required objects for NMT Client are not present 0x1f80,0x1029,0x1017,0x1001",Warnings.warning_class.WARNING_BUILD);
             }
 
-            foreach (KeyValuePair<UInt16, ODentry> kvp in eds.ods)
+            foreach (KeyValuePair<UInt16, ODentry> kvp in Eds.ods)
             {
                 UInt16 index = kvp.Key;
 
@@ -1623,7 +1636,7 @@ const CO_OD_entry_t CO_OD[CO_OD_NoOfElements] = {
 
             StringBuilder sb = new StringBuilder();
 
-            foreach (KeyValuePair<UInt16, ODentry> kvp in eds.ods)
+            foreach (KeyValuePair<UInt16, ODentry> kvp in Eds.ods)
             {
                 ODentry od = kvp.Value;
 

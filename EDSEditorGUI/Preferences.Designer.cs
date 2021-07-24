@@ -42,25 +42,28 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(32, 33);
+            this.label1.Location = new System.Drawing.Point(24, 27);
+            this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(119, 17);
+            this.label1.Size = new System.Drawing.Size(90, 13);
             this.label1.TabIndex = 0;
             this.label1.Text = "Selected exporter";
             // 
             // comboBox_exporter
             // 
             this.comboBox_exporter.FormattingEnabled = true;
-            this.comboBox_exporter.Location = new System.Drawing.Point(157, 26);
+            this.comboBox_exporter.Location = new System.Drawing.Point(118, 21);
+            this.comboBox_exporter.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.comboBox_exporter.Name = "comboBox_exporter";
-            this.comboBox_exporter.Size = new System.Drawing.Size(228, 24);
+            this.comboBox_exporter.Size = new System.Drawing.Size(240, 21);
             this.comboBox_exporter.TabIndex = 1;
             // 
             // button_save
             // 
-            this.button_save.Location = new System.Drawing.Point(100, 358);
+            this.button_save.Location = new System.Drawing.Point(75, 291);
+            this.button_save.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.button_save.Name = "button_save";
-            this.button_save.Size = new System.Drawing.Size(122, 44);
+            this.button_save.Size = new System.Drawing.Size(92, 36);
             this.button_save.TabIndex = 2;
             this.button_save.Text = "Save and close";
             this.button_save.UseVisualStyleBackColor = true;
@@ -68,9 +71,10 @@
             // 
             // button_close
             // 
-            this.button_close.Location = new System.Drawing.Point(513, 358);
+            this.button_close.Location = new System.Drawing.Point(385, 291);
+            this.button_close.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.button_close.Name = "button_close";
-            this.button_close.Size = new System.Drawing.Size(122, 44);
+            this.button_close.Size = new System.Drawing.Size(92, 36);
             this.button_close.TabIndex = 3;
             this.button_close.Text = "Close";
             this.button_close.UseVisualStyleBackColor = true;
@@ -79,9 +83,10 @@
             // checkBox_genericwarning
             // 
             this.checkBox_genericwarning.AutoSize = true;
-            this.checkBox_genericwarning.Location = new System.Drawing.Point(98, 104);
+            this.checkBox_genericwarning.Location = new System.Drawing.Point(74, 84);
+            this.checkBox_genericwarning.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.checkBox_genericwarning.Name = "checkBox_genericwarning";
-            this.checkBox_genericwarning.Size = new System.Drawing.Size(182, 21);
+            this.checkBox_genericwarning.Size = new System.Drawing.Size(141, 17);
             this.checkBox_genericwarning.TabIndex = 4;
             this.checkBox_genericwarning.Text = "Show Generic Warnings";
             this.checkBox_genericwarning.UseVisualStyleBackColor = true;
@@ -90,9 +95,10 @@
             // checkBox_renamewarning
             // 
             this.checkBox_renamewarning.AutoSize = true;
-            this.checkBox_renamewarning.Location = new System.Drawing.Point(98, 131);
+            this.checkBox_renamewarning.Location = new System.Drawing.Point(74, 106);
+            this.checkBox_renamewarning.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.checkBox_renamewarning.Name = "checkBox_renamewarning";
-            this.checkBox_renamewarning.Size = new System.Drawing.Size(185, 21);
+            this.checkBox_renamewarning.Size = new System.Drawing.Size(144, 17);
             this.checkBox_renamewarning.TabIndex = 5;
             this.checkBox_renamewarning.Text = "Show Rename Warnings";
             this.checkBox_renamewarning.UseVisualStyleBackColor = true;
@@ -100,9 +106,10 @@
             // checkBox_buildwarning
             // 
             this.checkBox_buildwarning.AutoSize = true;
-            this.checkBox_buildwarning.Location = new System.Drawing.Point(98, 158);
+            this.checkBox_buildwarning.Location = new System.Drawing.Point(74, 128);
+            this.checkBox_buildwarning.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.checkBox_buildwarning.Name = "checkBox_buildwarning";
-            this.checkBox_buildwarning.Size = new System.Drawing.Size(163, 21);
+            this.checkBox_buildwarning.Size = new System.Drawing.Size(127, 17);
             this.checkBox_buildwarning.TabIndex = 6;
             this.checkBox_buildwarning.Text = "Show Build Warnings";
             this.checkBox_buildwarning.UseVisualStyleBackColor = true;
@@ -110,9 +117,10 @@
             // checkBox_stringwarning
             // 
             this.checkBox_stringwarning.AutoSize = true;
-            this.checkBox_stringwarning.Location = new System.Drawing.Point(98, 185);
+            this.checkBox_stringwarning.Location = new System.Drawing.Point(74, 150);
+            this.checkBox_stringwarning.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.checkBox_stringwarning.Name = "checkBox_stringwarning";
-            this.checkBox_stringwarning.Size = new System.Drawing.Size(169, 21);
+            this.checkBox_stringwarning.Size = new System.Drawing.Size(131, 17);
             this.checkBox_stringwarning.TabIndex = 7;
             this.checkBox_stringwarning.Text = "Show String Warnings";
             this.checkBox_stringwarning.UseVisualStyleBackColor = true;
@@ -120,18 +128,19 @@
             // checkBox_structwarning
             // 
             this.checkBox_structwarning.AutoSize = true;
-            this.checkBox_structwarning.Location = new System.Drawing.Point(98, 212);
+            this.checkBox_structwarning.Location = new System.Drawing.Point(74, 172);
+            this.checkBox_structwarning.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.checkBox_structwarning.Name = "checkBox_structwarning";
-            this.checkBox_structwarning.Size = new System.Drawing.Size(169, 21);
+            this.checkBox_structwarning.Size = new System.Drawing.Size(132, 17);
             this.checkBox_structwarning.TabIndex = 8;
             this.checkBox_structwarning.Text = "Show Struct Warnings";
             this.checkBox_structwarning.UseVisualStyleBackColor = true;
             // 
             // Preferences
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(600, 366);
             this.Controls.Add(this.checkBox_structwarning);
             this.Controls.Add(this.checkBox_stringwarning);
             this.Controls.Add(this.checkBox_buildwarning);
@@ -141,6 +150,7 @@
             this.Controls.Add(this.button_save);
             this.Controls.Add(this.comboBox_exporter);
             this.Controls.Add(this.label1);
+            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.Name = "Preferences";
             this.Text = "Preferences";
             this.ResumeLayout(false);

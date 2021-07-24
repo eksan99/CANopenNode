@@ -26,15 +26,12 @@ using System.IO;
 
 namespace libEDSsharp
 {
-    
-
-
     /// <summary>
     /// Exporter for CanOpenNode_V4
     /// </summary>
-    public class CanOpenNodeExporter_V4 : IExporter
+    public class TinCanExporter : IExporter
     {
-        
+        private string odname;
 
         private List<string> ODStorageGroups;
         private Dictionary<string, List<string>> ODStorage_t;
@@ -60,10 +57,6 @@ namespace libEDSsharp
         UInt16 CNT_GFC = 0;
         UInt16 CNT_SRDO = 0;
 
-        public CanOpenNodeExporter_V4(string fileName, EDSsharp eds, string gitVersion) : base(fileName, eds, gitVersion)
-        {
-        }
-
         /// <summary>
         /// export the current data set in the CanOpen Node format V4
         /// </summary>
@@ -72,21 +65,14 @@ namespace libEDSsharp
         /// <param name="gitVersion"></param>
         /// <param name="eds"></param>
         /// <param name="odname"></param>
-        override public void export()
+        public void export(string folderpath, string filename, string gitVersion, EDSsharp eds, string odname)
         {
-            
+            this.odname = odname;
 
-            Prepare(Eds);
+            Prepare(eds);
 
-
-
-            string hFileName = GetFileNameWithExtension("h");
-            Export_h(hFileName);
-            LastExportedFile = hFileName;
-
-            string cFileName = GetFileNameWithExtension("c");
-            Export_c(cFileName);
-            LastExportedFile = cFileName;
+            Export_h(folderpath, filename, gitVersion, eds);
+            Export_c(folderpath, filename, gitVersion, eds);
         }
 
         #region Prepare
@@ -177,11 +163,11 @@ namespace libEDSsharp
                     continue;
 
                 // defines
-                ODDefines.Add($"#define {GetDefinitionName()}_ENTRY_H{indexH} &{GetDefinitionName()}->list[{ODList.Count}]");
-                ODDefinesLong.Add($"#define {GetDefinitionName()}_ENTRY_H{varName} &{GetDefinitionName()}->list[{ODList.Count}]");
+                ODDefines.Add($"#define {odname}_ENTRY_H{indexH} &{odname}->list[{ODList.Count}]");
+                ODDefinesLong.Add($"#define {odname}_ENTRY_H{varName} &{odname}->list[{ODList.Count}]");
 
                 // object dictionary
-                ODList.Add($"{{0x{indexH}, 0x{subEntriesCount:X2}, ODT_{odObjectType}, &{GetDefinitionName()}Objs.o_{varName}, NULL}}");
+                ODList.Add($"{{0x{indexH}, 0x{subEntriesCount:X2}, ODT_{odObjectType}, &{odname}Objs.o_{varName}, NULL}}");
 
                 // count labels
                 if (od.prop.CO_countLabel != null && od.prop.CO_countLabel != "")
@@ -228,7 +214,7 @@ namespace libEDSsharp
             {
                 ODStorage_t[group].Add($"{data.cType} x{varName}{data.cTypeArray};");
                 ODStorage[group].Add($".x{varName} = {data.cValue}");
-                dataPtr = $"&{GetDefinitionName()}_{group}.x{varName}{data.cTypeArray0}";
+                dataPtr = $"&{odname}_{group}.x{varName}{data.cTypeArray0}";
             }
 
             // objects
@@ -315,13 +301,13 @@ namespace libEDSsharp
             {
                 ODStorage_t[group].Add($"uint8_t x{varName}_sub0;");
                 ODStorage[group].Add($".x{varName}_sub0 = {cValue0}");
-                dataPtr0 = $"&{GetDefinitionName()}_{group}.x{varName}_sub0";
+                dataPtr0 = $"&{odname}_{group}.x{varName}_sub0";
             }
             if (dataElem.cValue != null)
             {
-                ODStorage_t[group].Add($"{dataElem.cType} x{varName}[{GetDefinitionName()}_CNT_ARR_{indexH}]{dataElem.cTypeArray};");
+                ODStorage_t[group].Add($"{dataElem.cType} x{varName}[{odname}_CNT_ARR_{indexH}]{dataElem.cTypeArray};");
                 ODStorage[group].Add($".x{varName} = {{{string.Join(", ", ODStorageValues)}}}");
-                dataPtr = $"&{GetDefinitionName()}_{group}.x{varName}[0]{dataElem.cTypeArray0}";
+                dataPtr = $"&{odname}_{group}.x{varName}[0]{dataElem.cTypeArray0}";
             }
 
             // sizeof data element inside the array
@@ -379,7 +365,7 @@ namespace libEDSsharp
                 {
                     subODStorage_t.Add($"{data.cType} {subcName}{data.cTypeArray};");
                     subODStorage.Add($".{subcName} = {data.cValue}");
-                    dataPtr = $"&{GetDefinitionName()}_{group}.x{varName}.{subcName}{data.cTypeArray0}";
+                    dataPtr = $"&{odname}_{group}.x{varName}.{subcName}{data.cTypeArray0}";
                 }
                 ODObjs.Add($"        {{");
                 ODObjs.Add($"            .dataOrig = {dataPtr},");
@@ -414,12 +400,13 @@ namespace libEDSsharp
         /// <param name="gitVersion"></param>
         /// <param name="fi"></param>
         /// <param name="di"></param>
-        private void Export_h( string filename)
+        private void Export_h(string folderpath, string filename, string gitVersion, EDSsharp eds)
         {
 
-            
+            if (filename == "")
+                filename = "OD";
 
-            StreamWriter file = new StreamWriter(filename);
+            StreamWriter file = new StreamWriter(folderpath + Path.DirectorySeparatorChar + filename + ".h");
             file.NewLine = "\n";
 
             file.WriteLine(string.Format(
@@ -452,11 +439,11 @@ namespace libEDSsharp
 
         Description:  {12}
 *******************************************************************************/",
-            GitVersion, GetDefinitionName(),
-            Path.GetFileName(Eds.projectFilename), Eds.fi.FileVersion,
-            Eds.fi.CreationDateTime, Eds.fi.CreatedBy, Eds.fi.ModificationDateTime, Eds.fi.ModifiedBy,
-            Eds.di.VendorName, Eds.di.VendorNumber, Eds.di.ProductName, Eds.di.ProductNumber,
-            Eds.fi.Description));
+            gitVersion, odname,
+            Path.GetFileName(eds.projectFilename), eds.fi.FileVersion,
+            eds.fi.CreationDateTime, eds.fi.CreatedBy, eds.fi.ModificationDateTime, eds.fi.ModifiedBy,
+            eds.di.VendorName, eds.di.VendorNumber, eds.di.ProductName, eds.di.ProductNumber,
+            eds.fi.Description));
 
             file.WriteLine(string.Format(@"
 #ifndef {0}_H
@@ -464,11 +451,11 @@ namespace libEDSsharp
 /*******************************************************************************
     Counters of OD objects
 *******************************************************************************/",
-            GetDefinitionName()));
+            odname));
 
             foreach (KeyValuePair<string, UInt16> kvp in ODCnt)
             {
-                file.WriteLine($"#define {GetDefinitionName()}_CNT_{kvp.Key} {kvp.Value}");
+                file.WriteLine($"#define {odname}_CNT_{kvp.Key} {kvp.Value}");
             }
 
             file.WriteLine(string.Format(@"
@@ -478,7 +465,7 @@ namespace libEDSsharp
 *******************************************************************************/"));
             foreach (KeyValuePair<string, int> kvp in ODArrSize)
             {
-                file.WriteLine($"#define {GetDefinitionName()}_CNT_ARR_{kvp.Key} {kvp.Value}");
+                file.WriteLine($"#define {odname}_CNT_ARR_{kvp.Key} {kvp.Value}");
             }
 
             file.WriteLine(@"
@@ -492,7 +479,7 @@ namespace libEDSsharp
                 {
                     file.WriteLine($"typedef struct {{");
                     file.WriteLine($"    {string.Join("\n    ", ODStorage_t[group])}");
-                    file.WriteLine($"}} {GetDefinitionName()}_{group}_t;\n");
+                    file.WriteLine($"}} {odname}_{group}_t;\n");
                 }
             }
 
@@ -500,16 +487,16 @@ namespace libEDSsharp
             {
                 if (ODStorage_t.Count > 0)
                 {
-                    file.WriteLine($"#ifndef {GetDefinitionName()}_ATTR_{group}");
-                    file.WriteLine($"#define {GetDefinitionName()}_ATTR_{group}");
+                    file.WriteLine($"#ifndef {odname}_ATTR_{group}");
+                    file.WriteLine($"#define {odname}_ATTR_{group}");
                     file.WriteLine($"#endif");
-                    file.WriteLine($"extern {GetDefinitionName()}_ATTR_{group} {GetDefinitionName()}_{group}_t {GetDefinitionName()}_{group};\n");
+                    file.WriteLine($"extern {odname}_ATTR_{group} {odname}_{group}_t {odname}_{group};\n");
                 }
             }
-            file.WriteLine($"#ifndef {GetDefinitionName()}_ATTR_OD");
-            file.WriteLine($"#define {GetDefinitionName()}_ATTR_OD");
+            file.WriteLine($"#ifndef {odname}_ATTR_OD");
+            file.WriteLine($"#define {odname}_ATTR_OD");
             file.WriteLine($"#endif");
-            file.WriteLine($"extern {GetDefinitionName()}_ATTR_OD OD_t *{GetDefinitionName()};");
+            file.WriteLine($"extern {odname}_ATTR_OD OD_t *{odname};");
 
             file.WriteLine(string.Format(@"
 
@@ -531,43 +518,43 @@ namespace libEDSsharp
     OD config structure
 *******************************************************************************/
 #ifdef CO_MULTIPLE_OD
-#define {GetDefinitionName()}_INIT_CONFIG(config) {{\
-    (config).CNT_NMT = {(ODCnt.ContainsKey("NMT") ? GetDefinitionName() + "_CNT_NMT" : "0")};\
-    (config).ENTRY_H1017 = {(Eds.ods.ContainsKey(0x1017) ? GetDefinitionName() + "_ENTRY_H1017" : "NULL")};\
-    (config).CNT_HB_CONS = {(ODCnt.ContainsKey("HB_CONS") ? GetDefinitionName() + "_CNT_HB_CONS" : "0")};\
-    (config).CNT_ARR_1016 = {(Eds.ods.ContainsKey(0x1016) ? GetDefinitionName() + "_CNT_ARR_1016" : "0")};\
-    (config).ENTRY_H1016 = {(Eds.ods.ContainsKey(0x1016) ? GetDefinitionName() + "_ENTRY_H1016" : "NULL")};\
-    (config).CNT_EM = {(ODCnt.ContainsKey("EM") ? GetDefinitionName() + "_CNT_EM" : "0")};\
-    (config).ENTRY_H1001 = {(Eds.ods.ContainsKey(0x1001) ? GetDefinitionName() + "_ENTRY_H1001" : "NULL")};\
-    (config).ENTRY_H1014 = {(Eds.ods.ContainsKey(0x1014) ? GetDefinitionName() + "_ENTRY_H1014" : "NULL")};\
-    (config).ENTRY_H1015 = {(Eds.ods.ContainsKey(0x1015) ? GetDefinitionName() + "_ENTRY_H1015" : "NULL")};\
-    (config).CNT_ARR_1003 = {(Eds.ods.ContainsKey(0x1003) ? GetDefinitionName() + "_CNT_ARR_1003" : "0")};\
-    (config).ENTRY_H1003 = {(Eds.ods.ContainsKey(0x1003) ? GetDefinitionName() + "_ENTRY_H1003" : "NULL")};\
-    (config).CNT_SDO_SRV = {(ODCnt.ContainsKey("SDO_SRV") ? GetDefinitionName() + "_CNT_SDO_SRV" : "0")};\
-    (config).ENTRY_H1200 = {(Eds.ods.ContainsKey(0x1200) ? GetDefinitionName() + "_ENTRY_H1200" : "NULL")};\
-    (config).CNT_SDO_CLI = {(ODCnt.ContainsKey("SDO_CLI") ? GetDefinitionName() + "_CNT_SDO_CLI" : "0")};\
-    (config).ENTRY_H1280 = {(Eds.ods.ContainsKey(0x1280) ? GetDefinitionName() + "_ENTRY_H1280" : "NULL")};\
-    (config).CNT_TIME = {(ODCnt.ContainsKey("TIME") ? GetDefinitionName() + "_CNT_TIME" : "0")};\
-    (config).ENTRY_H1012 = {(Eds.ods.ContainsKey(0x1012) ? GetDefinitionName() + "_ENTRY_H1012" : "NULL")};\
-    (config).CNT_SYNC = {(ODCnt.ContainsKey("SYNC") ? GetDefinitionName() + "_CNT_SYNC" : "0")};\
-    (config).ENTRY_H1005 = {(Eds.ods.ContainsKey(0x1005) ? GetDefinitionName() + "_ENTRY_H1005" : "NULL")};\
-    (config).ENTRY_H1006 = {(Eds.ods.ContainsKey(0x1006) ? GetDefinitionName() + "_ENTRY_H1006" : "NULL")};\
-    (config).ENTRY_H1007 = {(Eds.ods.ContainsKey(0x1007) ? GetDefinitionName() + "_ENTRY_H1007" : "NULL")};\
-    (config).ENTRY_H1019 = {(Eds.ods.ContainsKey(0x1019) ? GetDefinitionName() + "_ENTRY_H1019" : "NULL")};\
-    (config).CNT_RPDO = {(ODCnt.ContainsKey("RPDO") ? GetDefinitionName() + "_CNT_RPDO" : "0")};\
-    (config).ENTRY_H1400 = {(Eds.ods.ContainsKey(0x1400) ? GetDefinitionName() + "_ENTRY_H1400" : "NULL")};\
-    (config).ENTRY_H1600 = {(Eds.ods.ContainsKey(0x1600) ? GetDefinitionName() + "_ENTRY_H1600" : "NULL")};\
-    (config).CNT_TPDO = {(ODCnt.ContainsKey("TPDO") ? GetDefinitionName() + "_CNT_TPDO" : "0")};\
-    (config).ENTRY_H1800 = {(Eds.ods.ContainsKey(0x1800) ? GetDefinitionName() + "_ENTRY_H1800" : "NULL")};\
-    (config).ENTRY_H1A00 = {(Eds.ods.ContainsKey(0x1A00) ? GetDefinitionName() + "_ENTRY_H1A00" : "NULL")};\
+#define {odname}_INIT_CONFIG(config) {{\
+    (config).CNT_NMT = {(ODCnt.ContainsKey("NMT") ? odname + "_CNT_NMT" : "0")};\
+    (config).ENTRY_H1017 = {(eds.ods.ContainsKey(0x1017) ? odname + "_ENTRY_H1017" : "NULL")};\
+    (config).CNT_HB_CONS = {(ODCnt.ContainsKey("HB_CONS") ? odname + "_CNT_HB_CONS" : "0")};\
+    (config).CNT_ARR_1016 = {(eds.ods.ContainsKey(0x1016) ? odname + "_CNT_ARR_1016" : "0")};\
+    (config).ENTRY_H1016 = {(eds.ods.ContainsKey(0x1016) ? odname + "_ENTRY_H1016" : "NULL")};\
+    (config).CNT_EM = {(ODCnt.ContainsKey("EM") ? odname + "_CNT_EM" : "0")};\
+    (config).ENTRY_H1001 = {(eds.ods.ContainsKey(0x1001) ? odname + "_ENTRY_H1001" : "NULL")};\
+    (config).ENTRY_H1014 = {(eds.ods.ContainsKey(0x1014) ? odname + "_ENTRY_H1014" : "NULL")};\
+    (config).ENTRY_H1015 = {(eds.ods.ContainsKey(0x1015) ? odname + "_ENTRY_H1015" : "NULL")};\
+    (config).CNT_ARR_1003 = {(eds.ods.ContainsKey(0x1003) ? odname + "_CNT_ARR_1003" : "0")};\
+    (config).ENTRY_H1003 = {(eds.ods.ContainsKey(0x1003) ? odname + "_ENTRY_H1003" : "NULL")};\
+    (config).CNT_SDO_SRV = {(ODCnt.ContainsKey("SDO_SRV") ? odname + "_CNT_SDO_SRV" : "0")};\
+    (config).ENTRY_H1200 = {(eds.ods.ContainsKey(0x1200) ? odname + "_ENTRY_H1200" : "NULL")};\
+    (config).CNT_SDO_CLI = {(ODCnt.ContainsKey("SDO_CLI") ? odname + "_CNT_SDO_CLI" : "0")};\
+    (config).ENTRY_H1280 = {(eds.ods.ContainsKey(0x1280) ? odname + "_ENTRY_H1280" : "NULL")};\
+    (config).CNT_TIME = {(ODCnt.ContainsKey("TIME") ? odname + "_CNT_TIME" : "0")};\
+    (config).ENTRY_H1012 = {(eds.ods.ContainsKey(0x1012) ? odname + "_ENTRY_H1012" : "NULL")};\
+    (config).CNT_SYNC = {(ODCnt.ContainsKey("SYNC") ? odname + "_CNT_SYNC" : "0")};\
+    (config).ENTRY_H1005 = {(eds.ods.ContainsKey(0x1005) ? odname + "_ENTRY_H1005" : "NULL")};\
+    (config).ENTRY_H1006 = {(eds.ods.ContainsKey(0x1006) ? odname + "_ENTRY_H1006" : "NULL")};\
+    (config).ENTRY_H1007 = {(eds.ods.ContainsKey(0x1007) ? odname + "_ENTRY_H1007" : "NULL")};\
+    (config).ENTRY_H1019 = {(eds.ods.ContainsKey(0x1019) ? odname + "_ENTRY_H1019" : "NULL")};\
+    (config).CNT_RPDO = {(ODCnt.ContainsKey("RPDO") ? odname + "_CNT_RPDO" : "0")};\
+    (config).ENTRY_H1400 = {(eds.ods.ContainsKey(0x1400) ? odname + "_ENTRY_H1400" : "NULL")};\
+    (config).ENTRY_H1600 = {(eds.ods.ContainsKey(0x1600) ? odname + "_ENTRY_H1600" : "NULL")};\
+    (config).CNT_TPDO = {(ODCnt.ContainsKey("TPDO") ? odname + "_CNT_TPDO" : "0")};\
+    (config).ENTRY_H1800 = {(eds.ods.ContainsKey(0x1800) ? odname + "_ENTRY_H1800" : "NULL")};\
+    (config).ENTRY_H1A00 = {(eds.ods.ContainsKey(0x1A00) ? odname + "_ENTRY_H1A00" : "NULL")};\
     (config).CNT_LEDS = 0;\
-    (config).CNT_GFC = {(ODCnt.ContainsKey("GFC") ? GetDefinitionName() + "_CNT_GFC" : "0")};\
-    (config).ENTRY_H1300 = {(Eds.ods.ContainsKey(0x1300) ? GetDefinitionName() + "_ENTRY_H1300" : "NULL")};\
-    (config).CNT_SRDO = {(ODCnt.ContainsKey("SRDO") ? GetDefinitionName() + "_CNT_SRDO" : "0")};\
-    (config).ENTRY_H1301 = {(Eds.ods.ContainsKey(0x1301) ? GetDefinitionName() + "_ENTRY_H1301" : "NULL")};\
-    (config).ENTRY_H1381 = {(Eds.ods.ContainsKey(0x1381) ? GetDefinitionName() + "_ENTRY_H1381" : "NULL")};\
-    (config).ENTRY_H13FE = {(Eds.ods.ContainsKey(0x13FE) ? GetDefinitionName() + "_ENTRY_H13FE" : "NULL")};\
-    (config).ENTRY_H13FF = {(Eds.ods.ContainsKey(0x13FF) ? GetDefinitionName() + "_ENTRY_H13FF" : "NULL")};\
+    (config).CNT_GFC = {(ODCnt.ContainsKey("GFC") ? odname + "_CNT_GFC" : "0")};\
+    (config).ENTRY_H1300 = {(eds.ods.ContainsKey(0x1300) ? odname + "_ENTRY_H1300" : "NULL")};\
+    (config).CNT_SRDO = {(ODCnt.ContainsKey("SRDO") ? odname + "_CNT_SRDO" : "0")};\
+    (config).ENTRY_H1301 = {(eds.ods.ContainsKey(0x1301) ? odname + "_ENTRY_H1301" : "NULL")};\
+    (config).ENTRY_H1381 = {(eds.ods.ContainsKey(0x1381) ? odname + "_ENTRY_H1381" : "NULL")};\
+    (config).ENTRY_H13FE = {(eds.ods.ContainsKey(0x13FE) ? odname + "_ENTRY_H13FE" : "NULL")};\
+    (config).ENTRY_H13FF = {(eds.ods.ContainsKey(0x13FF) ? odname + "_ENTRY_H13FF" : "NULL")};\
     (config).CNT_LSS_SLV = 0;\
     (config).CNT_LSS_MST = 0;\
     (config).CNT_GTWA = 0;\
@@ -576,7 +563,7 @@ namespace libEDSsharp
 #endif");
 
             file.WriteLine(string.Format(@"
-#endif /* {0}_H */", GetDefinitionName()));
+#endif /* {0}_H */", odname));
 
             file.Close();
         }
@@ -588,12 +575,13 @@ namespace libEDSsharp
         /// <param name="folderpath"></param>
         /// <param name="filename"></param>
         /// <param name="gitVersion"></param>
-        private void Export_c(string filename)
+        private void Export_c(string folderpath, string filename, string gitVersion, EDSsharp eds)
             {
 
-            
+            if (filename == "")
+                filename = "OD";
 
-            StreamWriter file = new StreamWriter(filename);
+            StreamWriter file = new StreamWriter(folderpath + Path.DirectorySeparatorChar + filename + ".c");
             file.NewLine = "\n";
 
             file.WriteLine(string.Format(
@@ -614,7 +602,7 @@ namespace libEDSsharp
 
 #if CO_VERSION_MAJOR < 4
 #error This Object dictionary is compatible with CANopenNode V4.0 and above!
-#endif", GitVersion, GetBaseFileName()));
+#endif", gitVersion, filename));
 
     file.WriteLine(@"
 /*******************************************************************************
@@ -624,7 +612,7 @@ namespace libEDSsharp
             {
                 if (ODStorage.Count > 0)
                 {
-                    file.WriteLine($"{GetDefinitionName()}_ATTR_{group} {GetDefinitionName()}_{group}_t {GetDefinitionName()}_{group} = {{");
+                    file.WriteLine($"{odname}_ATTR_{group} {odname}_{group}_t {odname}_{group} = {{");
                     file.WriteLine($"    {string.Join(",\n    ", ODStorage[group])}");
                     file.WriteLine($"}};\n");
                 }
@@ -645,7 +633,7 @@ typedef struct {{
 
 static CO_PROGMEM {0}Objs_t {0}Objs = {{
 {2}
-}};", GetDefinitionName(), string.Join("\n    ", ODObjs_t), string.Join("\n", ODObjs)));
+}};", odname, string.Join("\n    ", ODObjs_t), string.Join("\n", ODObjs)));
 
             file.WriteLine(string.Format(@"
 
@@ -662,7 +650,7 @@ static OD_t _{0} = {{
     &{0}List[0]
 }};
 
-OD_t *{0} = &_{0};", GetDefinitionName(), string.Join(",\n    ", ODList)));
+OD_t *{0} = &_{0};", odname, string.Join(",\n    ", ODList)));
 
             file.Close();
         }
