@@ -132,7 +132,7 @@ namespace ODEditor
 
             if (button_saveChanges.BackColor == Color.Red)
             {
-                var answer = MessageBox.Show(String.Format("Unsaved changes on Index 0x{0:X4}/{1:X2}.\nDo you wish to switch object and loose your changes?", lastSelectedObject.Index, lastSelectedObject.Subindex), "Unsaved changes", MessageBoxButtons.YesNoCancel);
+                var answer = MessageBox.Show(String.Format("Unsaved changes on Index 0x{0:X4}/{1:X2}.\nDo you wish to switch object and loose your changes?\n\nYes = Lose changes\nNo = Save\nCancel = Go back and stay on the object", lastSelectedObject.Index, lastSelectedObject.Subindex), "Unsaved changes", MessageBoxButtons.YesNoCancel);
                 switch (answer)
                 {
                     case DialogResult.Cancel:
