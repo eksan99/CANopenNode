@@ -128,16 +128,35 @@ namespace ODEditor
 
         private bool Checkdirty()
         {
+            var result = false;
+
             if (button_saveChanges.BackColor == Color.Red)
             {
-                if (lastSelectedObject != null && MessageBox.Show(String.Format("Unsaved changes on Index 0x{0:X4}/{1:X2}.\nDo you wish to switch object and loose your changes?", lastSelectedObject.Index, lastSelectedObject.Subindex), "Unsaved changes", MessageBoxButtons.YesNo) == DialogResult.No)
+                var answer = MessageBox.Show(String.Format("Unsaved changes on Index 0x{0:X4}/{1:X2}.\nDo you wish to switch object and loose your changes?", lastSelectedObject.Index, lastSelectedObject.Subindex), "Unsaved changes", MessageBoxButtons.YesNoCancel);
+                switch (answer)
                 {
-                    return true;
+                    case DialogResult.Cancel:
+                    default:
+                        result = lastSelectedObject != null;
+                        break;
+
+                    case DialogResult.Yes:
+                        result = false;
+                        break;
+
+                    case DialogResult.No:
+                        if (lastSelectedObject != null)
+                        {
+                            ObjectSave();
+                            result = false;
+                        }
+                        break;
                 }
+
                 button_saveChanges.BackColor = default;
             }
 
-            return false;
+            return result;
         }
 
         private void ComboBoxSet(ComboBox comboBox, string item)
@@ -411,7 +430,11 @@ namespace ODEditor
 
         private void Button_saveChanges_Click(object sender, EventArgs e)
         {
+            ObjectSave();
+        }
 
+        private void ObjectSave()
+        {
             ExporterV4 = ExporterTypeV4();
             if (ExporterOld != ExporterV4)
             {
