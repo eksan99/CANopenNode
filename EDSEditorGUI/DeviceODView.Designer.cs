@@ -61,6 +61,7 @@ namespace ODEditor
             this.label23 = new System.Windows.Forms.Label();
             this.textBox_index = new System.Windows.Forms.TextBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.checkBox_autosave = new System.Windows.Forms.CheckBox();
             this.textBox_stringLengthMin = new System.Windows.Forms.TextBox();
             this.label22 = new System.Windows.Forms.Label();
             this.label20 = new System.Windows.Forms.Label();
@@ -464,6 +465,7 @@ namespace ODEditor
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.checkBox_autosave);
             this.groupBox1.Controls.Add(this.textBox_stringLengthMin);
             this.groupBox1.Controls.Add(this.label22);
             this.groupBox1.Controls.Add(this.label20);
@@ -495,13 +497,22 @@ namespace ODEditor
             this.groupBox1.Controls.Add(this.comboBox_accessPDO);
             this.groupBox1.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.groupBox1.Location = new System.Drawing.Point(0, 328);
-            this.groupBox1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupBox1.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupBox1.Padding = new System.Windows.Forms.Padding(2);
             this.groupBox1.Size = new System.Drawing.Size(853, 188);
             this.groupBox1.TabIndex = 33;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Object settings";
+            // 
+            // checkBox_autosave
+            // 
+            this.checkBox_autosave.Location = new System.Drawing.Point(702, 148);
+            this.checkBox_autosave.Name = "checkBox_autosave";
+            this.checkBox_autosave.Size = new System.Drawing.Size(139, 17);
+            this.checkBox_autosave.TabIndex = 35;
+            this.checkBox_autosave.Text = "Save changes on leave";
+            this.checkBox_autosave.UseVisualStyleBackColor = true;
             // 
             // textBox_stringLengthMin
             // 
@@ -1037,5 +1048,6 @@ namespace ODEditor
         private System.Windows.Forms.TextBox textBox_subIndex;
         private System.Windows.Forms.Label label23;
         private System.Windows.Forms.ToolStripMenuItem addToolStripMenuItem;
+        private System.Windows.Forms.CheckBox checkBox_autosave;
     }
 }

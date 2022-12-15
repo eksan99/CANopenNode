@@ -25,6 +25,7 @@ using System.Windows.Forms;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using libEDSsharp;
+
 namespace ODEditor
 {
 
@@ -132,7 +133,10 @@ namespace ODEditor
 
             if (button_saveChanges.BackColor == Color.Red)
             {
-                var answer = MessageBox.Show(String.Format("Unsaved changes on Index 0x{0:X4}/{1:X2}.\nDo you wish to switch object and loose your changes?\n\nYes = Lose changes\nNo = Save\nCancel = Go back and stay on the object", lastSelectedObject.Index, lastSelectedObject.Subindex), "Unsaved changes", MessageBoxButtons.YesNoCancel);
+                var answer = checkBox_autosave.Checked 
+                           ? DialogResult.No 
+                           : MessageBox.Show(String.Format("Unsaved changes on Index 0x{0:X4}/{1:X2}.\nDo you wish to switch object and loose your changes?\n\nYes = Lose changes\nNo = Save\nCancel = Go back and stay on the object", lastSelectedObject.Index, lastSelectedObject.Subindex), "Unsaved changes", MessageBoxButtons.YesNoCancel); ;
+
                 switch (answer)
                 {
                     case DialogResult.Cancel:
@@ -629,7 +633,8 @@ namespace ODEditor
                         contextMenu_subObject_removeSubItemToolStripMenuItem.Enabled = od.Subindex > 0 && od.parent != null;
                         contextMenu_subObject_removeSubItemLeaveGapToolStripMenuItem.Enabled = parent.objecttype == ObjectType.RECORD && od.Subindex > 0 && od.parent != null;
 
-                        if (listView_subObjects.FocusedItem.Bounds.Contains(e.Location) == true)
+                        
+                        if (isClickOnItem(e.Location))
                         {
                             contextMenu_subObject.Show(Cursor.Position);
                         }
@@ -638,6 +643,24 @@ namespace ODEditor
                 selectedObject = od;
                 PopulateObject();
             }
+        }
+
+        private bool isClickOnItem(Point location)
+        {
+            if (listView_subObjects.FocusedItem != null)
+            {
+                return listView_subObjects.FocusedItem.Bounds.Contains(location);
+            }
+
+            foreach (ListViewItem item in listView_subObjects.Items)
+            {
+                if (item.Bounds.Contains(location))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         private void ListView_subObjects_SelectedIndexChanged(object sender, EventArgs e)
