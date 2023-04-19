@@ -1511,7 +1511,16 @@ namespace libEDSsharp
 
             writer.WriteLine(string.Format("ParameterName={0}", parameter_name));
 
-            if(ft == InfoSection.Filetype.File_DCF)
+            if (Description != null && Description != "")
+            {
+                String[] description_lines = Description.Split('\n');
+                foreach (String line in description_lines)
+                {
+                    writer.WriteLine(string.Format(";;{0}", line));
+                }
+            }
+
+            if (ft == InfoSection.Filetype.File_DCF)
             {
                 writer.WriteLine(string.Format("Denotation={0}", denotation));
             }
@@ -2285,6 +2294,10 @@ namespace libEDSsharp
                             od.PDOtype = PDOMappingType.optional;
                     }
 
+                    if (kvp.Value.ContainsKey("Description"))
+                    {
+                        od.Description = kvp.Value["Description"];
+                    }
                 }
 
               
