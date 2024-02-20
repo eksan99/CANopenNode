@@ -507,6 +507,15 @@ namespace libEDSsharp
             }
             file.WriteLine(string.Format("  #define CO_NO_LSS_CLIENT               {0}   //LSS Master", lssClient));
 
+            int ngSlave = 0;
+            if (eds.di.NG_Slave == true)
+            {
+                ngSlave = 1;
+            }
+            file.WriteLine(string.Format("  #define CO_NODE_GUARDING_SLAVE         {0}   //NG Slave", ngSlave));
+
+            file.WriteLine(string.Format("  #define CO_NODE_GUARDING_MASTER        {0}   //NG Master", eds.di.NrOfNG_MonitoredNodes));
+
             file.WriteLine(string.Format("  #define CO_NO_RPDO                     {0}   //Associated objects: 14xx, 16xx", noRXpdos));
             file.WriteLine(string.Format("  #define CO_NO_TPDO                     {0}   //Associated objects: 18xx, 1Axx", noTXpdos));
 

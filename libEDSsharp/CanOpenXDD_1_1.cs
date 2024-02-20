@@ -771,6 +771,11 @@ namespace libEDSsharp
             NetworkManagement.CANopenGeneralFeatures.granularity = eds.di.Granularity; // required parameter
             NetworkManagement.CANopenGeneralFeatures.nrOfRxPDO = eds.di.NrOfRXPDO;
             NetworkManagement.CANopenGeneralFeatures.nrOfTxPDO = eds.di.NrOfTXPDO;
+
+            NetworkManagement.CANopenGeneralFeatures.ngSlave = eds.di.NG_Slave;
+            NetworkManagement.CANopenGeneralFeatures.ngMaster = eds.di.NG_Master;
+            NetworkManagement.CANopenGeneralFeatures.NrOfNG_MonitoredNodes = eds.di.NrOfNG_MonitoredNodes;
+
             NetworkManagement.CANopenGeneralFeatures.layerSettingServiceSlave = eds.di.LSS_Supported;
             // not handled by GUI
             NetworkManagement.CANopenGeneralFeatures.groupMessaging = eds.di.GroupMessaging;
@@ -926,6 +931,9 @@ namespace libEDSsharp
                         eds.di.NrOfRXPDO = NetworkManagement.CANopenGeneralFeatures.nrOfRxPDO;
                         eds.di.NrOfTXPDO = NetworkManagement.CANopenGeneralFeatures.nrOfTxPDO;
                         eds.di.LSS_Supported = NetworkManagement.CANopenGeneralFeatures.layerSettingServiceSlave;
+                        eds.di.NG_Slave = NetworkManagement.CANopenGeneralFeatures.ngSlave;
+                        eds.di.NG_Master = NetworkManagement.CANopenGeneralFeatures.ngMaster;
+                        eds.di.NrOfNG_MonitoredNodes = NetworkManagement.CANopenGeneralFeatures.NrOfNG_MonitoredNodes;
                         // not handled by GUI
                         eds.di.GroupMessaging = NetworkManagement.CANopenGeneralFeatures.groupMessaging;
                         eds.di.DynamicChannelsSupported = NetworkManagement.CANopenGeneralFeatures.dynamicChannels > 0;

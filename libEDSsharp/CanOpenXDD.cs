@@ -641,10 +641,15 @@ namespace libEDSsharp
             NetworkManagement.CANopenGeneralFeatures.granularity = eds.di.Granularity;
             NetworkManagement.CANopenGeneralFeatures.groupMessaging = eds.di.GroupMessaging;
 
+            NetworkManagement.CANopenGeneralFeatures.ngMaster = eds.di.NG_Master;
+            NetworkManagement.CANopenGeneralFeatures.ngSlave = eds.di.NG_Slave;
+            NetworkManagement.CANopenGeneralFeatures.NrOfNG_MonitoredNodes = eds.di.NrOfNG_MonitoredNodes;
+
             NetworkManagement.CANopenGeneralFeatures.layerSettingServiceSlave = eds.di.LSS_Supported;
             NetworkManagement.CANopenGeneralFeatures.nrOfRxPDO = eds.di.NrOfRXPDO;
             NetworkManagement.CANopenGeneralFeatures.nrOfTxPDO = eds.di.NrOfTXPDO;
             //extra items
+
             //NetworkManagment.CANopenGeneralFeatures.SDORequestingDevice;
             //NetworkManagment.CANopenGeneralFeatures.selfStartingDevice;
 
@@ -911,6 +916,10 @@ namespace libEDSsharp
                         {
                             eds.di.LSS_Supported = true;
                         }
+
+                        eds.di.NG_Master = NetworkManagment.CANopenGeneralFeatures.ngMaster;
+                        eds.di.NG_Slave = NetworkManagment.CANopenGeneralFeatures.ngSlave;
+                        eds.di.NrOfNG_MonitoredNodes = NetworkManagment.CANopenGeneralFeatures.NrOfNG_MonitoredNodes;
 
                         eds.di.NrOfRXPDO = NetworkManagment.CANopenGeneralFeatures.nrOfRxPDO;
                         eds.di.NrOfTXPDO = NetworkManagment.CANopenGeneralFeatures.nrOfTxPDO;
@@ -3822,6 +3831,9 @@ namespace CanOpenXSD_1_0
 
         private ushort nrOfTxPDOField;
 
+        private bool ngMasterField;
+        private bool ngSlaveField;
+        private ushort NrOfNG_MonitoredNodesField;
         private bool bootUpSlaveField;
 
         private bool layerSettingServiceSlaveField;
@@ -3834,6 +3846,9 @@ namespace CanOpenXSD_1_0
             this.sDORequestingDeviceField = false;
             this.nrOfRxPDOField = ((ushort)(0));
             this.nrOfTxPDOField = ((ushort)(0));
+            this.ngMasterField = false;
+            this.ngSlaveField = false;
+            this.NrOfNG_MonitoredNodesField = ((ushort)(0));
             this.bootUpSlaveField = false;
             this.layerSettingServiceSlaveField = false;
         }
@@ -3954,6 +3969,52 @@ namespace CanOpenXSD_1_0
             set
             {
                 this.bootUpSlaveField = value;
+            }
+        }
+
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [System.ComponentModel.DefaultValueAttribute(false)]
+        public bool ngSlave
+        {
+            get
+            {
+                return this.ngSlaveField;
+            }
+            set
+            {
+                this.ngSlaveField = value;
+            }
+        }
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [System.ComponentModel.DefaultValueAttribute(false)]
+        public bool ngMaster
+        {
+            get
+            {
+                return this.ngMasterField;
+            }
+            set
+            {
+                this.ngMasterField = value;
+            }
+        }
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [System.ComponentModel.DefaultValueAttribute(typeof(ushort), "0")]
+        public ushort NrOfNG_MonitoredNodes
+        {
+            get
+            {
+                return this.NrOfNG_MonitoredNodesField;
+            }
+            set
+            {
+                this.NrOfNG_MonitoredNodesField = value;
             }
         }
 

@@ -25,11 +25,15 @@ using System.Text.RegularExpressions;
 using System.Globalization;
 using System.Reflection;
 using CanOpenXSD_1_1;
+using System.Runtime.Remoting.Messaging;
+using System.Net.NetworkInformation;
+using System.Security.Cryptography;
+using Xml2CSharp;
 
 namespace libEDSsharp
 {
 
-
+   
     public enum DataType
     {
         UNKNOWN = 0,
@@ -791,6 +795,13 @@ namespace libEDSsharp
         public bool LSS_Supported;
 
         public bool LSS_Master;
+
+        [EdsExport]
+        public bool NG_Slave;
+
+        public bool NG_Master;
+
+        public UInt16 NrOfNG_MonitoredNodes;
 
         public DeviceInfo()
         {
@@ -2136,9 +2147,14 @@ namespace libEDSsharp
 
                 if (m2.Success)
                 {
+                    UInt16 modindex=0, odindex=0;
 
-                    UInt16 modindex = Convert.ToUInt16(m2.Groups[1].Value);
-                    UInt16 odindex = Convert.ToUInt16(m2.Groups[3].Value);
+                    try {  modindex = Convert.ToUInt16(m2.Groups[1].Value); }
+                    catch (Exception) { Console.WriteLine("** ALL GONE WRONG **" + m2.Groups[1].Value); }
+                    //Indexes in the EDS are always in hex format without the pre 0x
+                    try {  odindex = Convert.ToUInt16(m2.Groups[3].Value, 16); }
+                    catch (Exception) { Console.WriteLine("** ALL GONE WRONG **" + m2.Groups[3].Value); }
+
 
                     if (!modules.ContainsKey(modindex))
                         modules.Add(modindex, new Module(modindex));
@@ -2210,12 +2226,40 @@ namespace libEDSsharp
 
                 if (kvp.Value.ContainsKey("Count"))
                 {
-                    od.count = Convert.ToByte(kvp.Value["Count"]);
+                    /*  FIXME: The format of  "Count" is Unsigned8[; Unsigned8] according DS306
+                     *  Count:
+                        Number of extended Sub-Indexes with this description that are created per module. The format is Unsigned8 [; Unsigned8].
+                        If one or more Sub - Indexes are created per attached module to build a new sub- index, then Count is that                        Number. In example 32 bit module creates 4 Sub - Indexes each having 8 Bit: Count = 4
+                        If several modules are gathered to form a new Sub- Index, then the number is 0, followed by semicolon and the                        number of bits that are created per module to build a new Sub-Index.In example 2 bit modules with 8 bit objects: The                        first Sub - Index is built upon modules 1 - 4, the next upon modules 5 - 8 etc.: Count = 0; 2.The objects are created,                        when a new byte begins: Module 1 creates the Sub - Index 1; modules 2 - 4 fill it up; module 5 creates Sub-Index 2 and                        so forth.
+                    */
+                    pat2 = @"\s*([0-9a-fA-F]+)\s*;\s*([0-9a-fA-F]+)";
+                    r2 = new Regex(pat2, RegexOptions.IgnoreCase);
+                    m2 = r2.Match(kvp.Value["Count"]);
+
+
+
+                    if (m2.Success)
+                    {
+                        Console.WriteLine("** FIXME Count format not supported ** Count: " + kvp.Value["Count"]);
+                        int found = kvp.Value["Count"].IndexOf(";");
+                        string s = kvp.Value["Count"].Substring(found + 1);
+                        try { od.count = Convert.ToByte(s, Getbase(s)); }
+                        catch (Exception) { Console.WriteLine("** ALL GONE WRONG ** Count" + kvp.Value["Count"]); }
+                    }
+                    else
+                    {
+
+                        try { od.count = Convert.ToByte(kvp.Value["Count"], Getbase(kvp.Value["Count"])); }
+                        catch (Exception) { Console.WriteLine("** ALL GONE WRONG ** Count" + kvp.Value["Count"]); }
+                    }
+                    
                 }
 
                 if (kvp.Value.ContainsKey("ObjExtend"))
                 {
-                    od.ObjExtend = Convert.ToByte(kvp.Value["ObjExtend"]);
+                    try { od.ObjExtend = Convert.ToByte(kvp.Value["ObjExtend"]); }
+                    catch (Exception) { Console.WriteLine("** ALL GONE WRONG ** ObjExtend:" + kvp.Value["ObjExtend"]); }
+                    
                 }
 
 
@@ -2227,22 +2271,29 @@ namespace libEDSsharp
 
                     if (kvp.Value.ContainsKey("ParameterValue"))
                     {
-                        od.actualvalue = kvp.Value["ParameterValue"];
+
+                        try { od.actualvalue = kvp.Value["ParameterValue"]; }
+                        catch (Exception) { Console.WriteLine("** ALL GONE WRONG ** ParameterValue:" + kvp.Value["ParameterValue"]); }
                     }
 
                     if (kvp.Value.ContainsKey("HighLimit"))
                     {
-                        od.HighLimit = kvp.Value["HighLimit"];
+                        try { od.HighLimit = kvp.Value["HighLimit"]; }
+                        catch (Exception) { Console.WriteLine("** ALL GONE WRONG ** HighLimit:" + kvp.Value["HighLimit"]); }
                     }
 
                     if (kvp.Value.ContainsKey("LowLimit"))
                     {
-                        od.LowLimit = kvp.Value["LowLimit"];
+                        try { od.LowLimit = kvp.Value["LowLimit"]; }
+                        catch (Exception) { Console.WriteLine("** ALL GONE WRONG ** LowLimit:" + kvp.Value["LowLimit"]); }
                     }
 
                     if (kvp.Value.ContainsKey("Denotation"))
                     {
-                        od.denotation = kvp.Value["Denotation"];
+                        try { od.denotation = kvp.Value["Denotation"]; }
+                        catch (Exception) { Console.WriteLine("** ALL GONE WRONG ** Denotation:" + kvp.Value["Denotation"]); }
+
+                        
                     }
 
                     if (m.Groups[5].Length != 0)
@@ -2379,7 +2430,7 @@ namespace libEDSsharp
             //try
             {
                 int lineno = 1;
-                foreach (string linex in File.ReadLines(filename))
+                foreach (string linex in System.IO.File.ReadLines(filename))
                 {
                     Parseline(linex,lineno);
                     lineno++;
@@ -2389,7 +2440,10 @@ namespace libEDSsharp
 
                 foreach (KeyValuePair<string, Dictionary<string, string>> kvp in eds)
                 {
-                    ParseEDSentry(kvp);
+
+                    try { ParseEDSentry(kvp); }
+                    catch (Exception) { Console.WriteLine("** ALL GONE WRONG **" + kvp); }
+                    
                 }
 
                 fi = new FileInfo(eds["FileInfo"]);
@@ -2438,7 +2492,7 @@ namespace libEDSsharp
 
                     foreach (string s in eds.Keys)
                     {
-                        String pat = @"^M([0-9]+)ModuleInfo";
+                        String pat = @"M([0-9]+)ModuleInfo";
                         Regex r = new Regex(pat, RegexOptions.IgnoreCase);
                         Match m = r.Match(s);
 
@@ -2455,7 +2509,7 @@ namespace libEDSsharp
                         }
 
 
-                        pat = @"^M([0-9]+)Comments";
+                        pat = @"M([0-9]+)Comments";
                         r = new Regex(pat, RegexOptions.IgnoreCase);
                         m = r.Match(s);
 
@@ -2470,8 +2524,7 @@ namespace libEDSsharp
                             modules[modindex].mc = mc;
 
                         }
-
-                        pat = @"^M([0-9]+)SubExtends";
+                        pat = @"M([0-9]+)SubExtends";
                         r = new Regex(pat, RegexOptions.IgnoreCase);
                         m = r.Match(s);
 
@@ -2488,7 +2541,8 @@ namespace libEDSsharp
 
 
                         //DCF only
-                        pat = @"^M([0-9]+)FixedObjects";
+
+                        pat = @"M([0-9]+)FixedObjects";
                         r = new Regex(pat, RegexOptions.IgnoreCase);
                         m = r.Match(s);
 
@@ -2656,7 +2710,7 @@ namespace libEDSsharp
             fi.EDSVersionMajor = 4;
             fi.EDSVersionMinor = 0;
 
-            StreamWriter writer = File.CreateText(filename);
+            StreamWriter writer = System.IO.File.CreateText(filename);
             writer.NewLine = "\n";
             fi.Write(writer,ft);
             di.Write(writer,ft);

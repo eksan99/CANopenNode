@@ -199,9 +199,11 @@ Device Information
 | TPDO count   | {6,-30} |
 | LSS Slave    | {7,-30} |
 | LSS Master   | {8,-30} |
+| NG Slave     | {9,-30} |
+| NG Master    | {10,-30} |
 ",          eds.di.VendorName, eds.di.VendorNumber, eds.di.ProductName, eds.di.ProductNumber,
             eds.di.Granularity, eds.di.NrOfRXPDO.ToString(), eds.di.NrOfTXPDO.ToString(),
-            eds.di.LSS_Supported, eds.di.LSS_Master));
+            eds.di.LSS_Supported, eds.di.LSS_Master, eds.di.NG_Slave, eds.di.NG_Master));
 
             file.WriteLine($"#### Supported Baud rates");
             file.WriteLine($"* [{(eds.di.BaudRate_10 ? "x" : " ")}] 10 kBit/s");

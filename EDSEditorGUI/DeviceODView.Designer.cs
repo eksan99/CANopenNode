@@ -507,9 +507,9 @@ namespace ODEditor
             // 
             // checkBox_autosave
             // 
-            this.checkBox_autosave.Location = new System.Drawing.Point(702, 148);
+            this.checkBox_autosave.Location = new System.Drawing.Point(634, 146);
             this.checkBox_autosave.Name = "checkBox_autosave";
-            this.checkBox_autosave.Size = new System.Drawing.Size(139, 17);
+            this.checkBox_autosave.Size = new System.Drawing.Size(116, 21);
             this.checkBox_autosave.TabIndex = 35;
             this.checkBox_autosave.Text = "Autosave changes";
             this.checkBox_autosave.UseVisualStyleBackColor = true;
@@ -627,7 +627,7 @@ namespace ODEditor
             this.button_saveChanges.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.button_saveChanges.Location = new System.Drawing.Point(485, 138);
             this.button_saveChanges.Name = "button_saveChanges";
-            this.button_saveChanges.Size = new System.Drawing.Size(211, 35);
+            this.button_saveChanges.Size = new System.Drawing.Size(143, 35);
             this.button_saveChanges.TabIndex = 50;
             this.button_saveChanges.Text = "Save Changes";
             this.button_saveChanges.UseVisualStyleBackColor = true;

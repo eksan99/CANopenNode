@@ -2461,6 +2461,10 @@ namespace CanOpenXSD_1_1 {
 
         private bool bootUpSlaveField;
 
+        private bool ngSlaveField;
+        private bool ngMasterField;
+        private ushort NrOfNG_MonitoredNodesField;
+
         private bool layerSettingServiceSlaveField;
 
         public ProfileBody_CommunicationNetwork_CANopenNetworkManagementCANopenGeneralFeatures() {
@@ -2471,6 +2475,9 @@ namespace CanOpenXSD_1_1 {
             this.nrOfRxPDOField = ((ushort)(0));
             this.nrOfTxPDOField = ((ushort)(0));
             this.bootUpSlaveField = false;
+            this.ngSlaveField = false;
+            this.ngMasterField = false;
+            this.NrOfNG_MonitoredNodesField = ((ushort)(0));
             this.layerSettingServiceSlaveField = false;
         }
 
@@ -2554,6 +2561,51 @@ namespace CanOpenXSD_1_1 {
             }
             set {
                 this.nrOfTxPDOField = value;
+            }
+        }
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [System.ComponentModel.DefaultValueAttribute(false)]
+        public bool ngSlave
+        {
+            get
+            {
+                return this.ngSlaveField;
+            }
+            set
+            {
+                this.ngSlaveField = value;
+            }
+        }
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [System.ComponentModel.DefaultValueAttribute(false)]
+        public bool ngMaster
+        {
+            get
+            {
+                return this.ngMasterField;
+            }
+            set
+            {
+                this.ngMasterField = value;
+            }
+        }
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [System.ComponentModel.DefaultValueAttribute(typeof(ushort), "0")]
+        public ushort NrOfNG_MonitoredNodes
+        {
+            get
+            {
+                return this.NrOfNG_MonitoredNodesField;
+            }
+            set
+            {
+                this.NrOfNG_MonitoredNodesField = value;
             }
         }
 

@@ -25,6 +25,8 @@ using System.Windows.Forms;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using libEDSsharp;
+
+
 namespace ODEditor
 {
 
@@ -588,7 +590,11 @@ namespace ODEditor
         private void ListView_objects_MouseClick(object sender, MouseEventArgs e)
         {
             ListView listview = (ListView)sender;
-            ODentry od = listview.SelectedItems.Count > 0 ? (ODentry)listview.SelectedItems[0].Tag : null;
+
+            if (listview.SelectedItems.Count <= 0)
+                return;
+
+            ODentry od = (ODentry)listview.SelectedItems[0].Tag;
 
             if ((od != selectedObject || e.Button == MouseButtons.Right) && !Checkdirty())
             {
@@ -603,6 +609,16 @@ namespace ODEditor
                 PopulateObject();
                 PopulateSubList();
             }
+            else {
+                //selectedObject = lastSelectedObject;
+                //od = selectedObject;
+                //selectedList.Select();
+                //string indesnew = "0x" + Convert.ToString(selectedObject.Index, 16);
+                //ListViewItem itemnew = selectedList.FindItemWithText(indesnew);
+                //listview.FocusedItem = itemnew;
+                //listView_subObjects.Focus();
+
+            }
             listView_communication_objects.HideSelection = true;
             listView_deviceProfile_objects.HideSelection = true;
             listView_manufacturer_objects.HideSelection = true;
@@ -610,6 +626,7 @@ namespace ODEditor
 
         private void ListView_objects_SelectedIndexChanged(object sender, EventArgs e)
         {
+
             ListView_objects_MouseClick(sender, new MouseEventArgs(MouseButtons.None, 0, 0, 0, 0));
         }
 

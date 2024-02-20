@@ -216,8 +216,10 @@ namespace libEDSsharp
                     //Look at mappings
 
                     ODentry mapping = eds.Getobject((ushort)(idx + 0x200));
-                    slot.DescriptionMap = mapping.Description;
-                    if(mapping==null)
+
+                    if (mapping != null) {
+                        slot.DescriptionMap = mapping.Description; 
+                    }else
                     {
                         Console.WriteLine(string.Format("No mapping for index 0x{0:X4} should be at 0x{1:X4}", idx, idx + 0x200));
                         continue;
