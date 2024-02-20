@@ -25,7 +25,7 @@ using System.Text.RegularExpressions;
 using System.Globalization;
 using System.Reflection;
 using CanOpenXSD_1_1;
-using System.Runtime.Remoting.Messaging;
+//using System.Runtime.Remoting.Messaging;
 using System.Net.NetworkInformation;
 using System.Security.Cryptography;
 using Xml2CSharp;
