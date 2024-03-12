@@ -335,6 +335,22 @@
             </summary>
             <param name="configindex"></param>
         </member>
+        <member name="T:libEDSsharp.Properties.Resources">
+            <summary>
+              Eine stark typisierte Ressourcenklasse zum Suchen von lokalisierten Zeichenfolgen usw.
+            </summary>
+        </member>
+        <member name="P:libEDSsharp.Properties.Resources.ResourceManager">
+            <summary>
+              Gibt die zwischengespeicherte ResourceManager-Instanz zurück, die von dieser Klasse verwendet wird.
+            </summary>
+        </member>
+        <member name="P:libEDSsharp.Properties.Resources.Culture">
+            <summary>
+              Überschreibt die CurrentUICulture-Eigenschaft des aktuellen Threads für alle
+              Ressourcenzuordnungen, die diese stark typisierte Ressourcenklasse verwenden.
+            </summary>
+        </member>
         <member name="T:CanOpenXSD_1_0.ISO15745ProfileContainer">
             <remarks/>
         </member>
@@ -969,6 +985,15 @@
             <remarks/>
         </member>
         <member name="P:CanOpenXSD_1_0.ProfileBody_CommunicationNetwork_CANopenNetworkManagementCANopenGeneralFeatures.bootUpSlave">
+            <remarks/>
+        </member>
+        <member name="P:CanOpenXSD_1_0.ProfileBody_CommunicationNetwork_CANopenNetworkManagementCANopenGeneralFeatures.ngSlave">
+            <remarks/>
+        </member>
+        <member name="P:CanOpenXSD_1_0.ProfileBody_CommunicationNetwork_CANopenNetworkManagementCANopenGeneralFeatures.ngMaster">
+            <remarks/>
+        </member>
+        <member name="P:CanOpenXSD_1_0.ProfileBody_CommunicationNetwork_CANopenNetworkManagementCANopenGeneralFeatures.NrOfNG_MonitoredNodes">
             <remarks/>
         </member>
         <member name="P:CanOpenXSD_1_0.ProfileBody_CommunicationNetwork_CANopenNetworkManagementCANopenGeneralFeatures.layerSettingServiceSlave">
@@ -3381,6 +3406,15 @@
             <remarks/>
         </member>
         <member name="P:CanOpenXSD_1_1.ProfileBody_CommunicationNetwork_CANopenNetworkManagementCANopenGeneralFeatures.nrOfTxPDO">
+            <remarks/>
+        </member>
+        <member name="P:CanOpenXSD_1_1.ProfileBody_CommunicationNetwork_CANopenNetworkManagementCANopenGeneralFeatures.ngSlave">
+            <remarks/>
+        </member>
+        <member name="P:CanOpenXSD_1_1.ProfileBody_CommunicationNetwork_CANopenNetworkManagementCANopenGeneralFeatures.ngMaster">
+            <remarks/>
+        </member>
+        <member name="P:CanOpenXSD_1_1.ProfileBody_CommunicationNetwork_CANopenNetworkManagementCANopenGeneralFeatures.NrOfNG_MonitoredNodes">
             <remarks/>
         </member>
         <member name="P:CanOpenXSD_1_1.ProfileBody_CommunicationNetwork_CANopenNetworkManagementCANopenGeneralFeatures.bootUpSlave">
