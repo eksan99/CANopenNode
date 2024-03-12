@@ -30,7 +30,9 @@ jobs:
       run: msbuild EDSEditorGUI /property:Configuration=Release
 #      run: dotnet build --no-restore
     - name: Test
-      run: dotnet test --no-build --verbosity normal
+      run: |
+          msbuild Tests /property:Configuration=Release
+          dotnet test --no-build --verbosity normal
     - name: Upload Artifact
       uses: actions/upload-artifact@v3
       with:
