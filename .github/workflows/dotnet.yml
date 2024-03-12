@@ -24,13 +24,13 @@ jobs:
     - name: Add Packages
       run: |
         nuget install EDSEditorGUI/packages.config -OutputDirectory packages
-#        nuget install Tests/packages.config -OutputDirectory packages
+        nuget install Tests/packages.config -OutputDirectory packages
     - name: Build
 #      run: make all # builds the Debug configuration
       run: msbuild EDSEditorGUI /property:Configuration=Release
 #      run: dotnet build --no-restore
-#    - name: Test
-#      run: dotnet test --no-build --verbosity normal
+    - name: Test
+      run: dotnet test --no-build --verbosity normal
     - name: Upload Artifact
       uses: actions/upload-artifact@v3
       with:
