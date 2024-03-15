@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Xunit;
 using libEDSsharp;
 
@@ -44,7 +44,7 @@ namespace Tests
             subod = new ODentry("Test String 2", 0x01, DataType.VISIBLE_STRING, new string('*', 255), EDSsharp.AccessType.ro, PDOMappingType.optional, od);
             test = export_one_record_type(subod, "");
 
-            if (test != "           {(void*)&CO_OD_RAM.testRecord.testString2, 0x26, 0xFF }," + Environment.NewLine)
+            if (test != "           {(void*)&CO_OD_RAM.testRecord.testString2, 0x36, 0xFF }," + Environment.NewLine)
                 throw (new Exception("export_one_record_type() error test 2"));
 
         }
@@ -78,7 +78,7 @@ namespace Tests
 
             string test = print_h_entry(od);
 
-            if (test != "/*2000      */ VISIBLE_STRING  testArray[32][4];" + Environment.NewLine)
+            if (test != "/*2000      */ VISIBLE_STRING  testArray[4][32];" + Environment.NewLine)
                 throw (new Exception("TestArrays() test 1 failed"));
 
 
@@ -151,7 +151,7 @@ namespace Tests
             od.subobjects.Add(0x03, new ODentry("LINE1", 0x03, DataType.UNSIGNED32, "0x01", EDSsharp.AccessType.ro, PDOMappingType.optional));
 
             test = write_od_line(od);
-            if (test != "{0x1003, 0x03, 0x06,  0, (void*)&CO_OD_RAM.testArray[0]}," + Environment.NewLine)
+            if (test != "{0x1003, 0x03, 0x0E,  0, (void*)&CO_OD_RAM.testArray[0]}," + Environment.NewLine)
                 throw (new Exception("TestArrayNoEntries() failed"));
 
 

@@ -1118,7 +1118,7 @@ namespace libEDSsharp
 
                                 subentry.uniqueID = subobj.uniqueIDRef;
 
-                                entry.subobjects.Add(subobj.subIndex[0], subentry);
+                                entry.subobjects.Add(subobj.subIndex[subobj.subIndex.Length - 1], subentry);
 
                             }
                         }
