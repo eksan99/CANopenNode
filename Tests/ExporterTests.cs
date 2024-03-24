@@ -159,6 +159,27 @@ namespace Tests
         }
 
         /// <summary>
+        /// Check the var string is exportet correctly
+        /// </summary>
+        [Theory]
+        [InlineData(1, "")]
+        [InlineData(5, "12345")]
+        void TestVarString(int expectedLength, string defaultvalue)
+        {
+            var od = new ODentry
+            {
+                objecttype = ObjectType.VAR,
+                datatype = DataType.VISIBLE_STRING,
+                parameter_name = "test string",
+                accesstype = EDSsharp.AccessType.ro,
+                Index = 0x2000
+            };
+            od.defaultvalue = defaultvalue;
+            var test = print_h_entry(od);
+            Assert.Equal(test, $"/*{od.Index:X}      */ VISIBLE_STRING testString[{expectedLength}];" + Environment.NewLine);
+        }
+
+        /// <summary>
         /// Check size of objects is correct
         /// </summary>
         [Fact]
