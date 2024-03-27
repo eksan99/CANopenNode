@@ -205,5 +205,165 @@ namespace Tests
 
         }
 
+        [Fact]
+        public void TestImportExportVar()
+        {
+            eds = new EDSsharp
+            {
+                ods = new System.Collections.Generic.SortedDictionary<ushort, ODentry>()
+            };
+
+            ODentry od = new ODentry
+            {
+                objecttype = ObjectType.VAR,
+                datatype = DataType.UNSIGNED8,
+                parameter_name = "Test VAR",
+                accesstype = EDSsharp.AccessType.ro,
+                PDOtype = PDOMappingType.optional,
+                Index = 0x2000
+            };
+
+            eds.ods.Add(0x2000, od);
+
+            string tempfile = System.IO.Path.GetTempFileName();
+            eds.Savefile(tempfile, InfoSection.Filetype.File_EDS);
+
+            eds = new EDSsharp();
+            eds.Loadfile(tempfile);
+
+            od = eds.ods[0x2000];
+
+            Assert.True(od.PDOtype == PDOMappingType.optional, "TPDOMappingType.optional not set in EDS for VAR");
+        }
+
+        /// </summary>
+        [Fact]
+        public void TestImportExportRecord()
+        {
+            eds = new EDSsharp
+            {
+                ods = new System.Collections.Generic.SortedDictionary<ushort, ODentry>()
+            };
+
+            ODentry od = new ODentry
+            {
+                objecttype = ObjectType.RECORD,
+                parameter_name = "Test REC",
+                Index = 0x2000
+            };
+
+            ODentry sub = new ODentry
+            {
+                parameter_name = "max sub-index",
+                datatype = DataType.UNSIGNED8,
+                parent = od,
+                accesstype = EDSsharp.AccessType.ro,
+                defaultvalue = "1",
+                PDOtype = PDOMappingType.no,
+                objecttype = ObjectType.VAR
+            };
+
+            od.subobjects.Add(0x00, sub);
+
+            sub = new ODentry
+            {
+                parameter_name = "entry 1",
+                datatype = DataType.UNSIGNED8,
+                parent = od,
+                accesstype = EDSsharp.AccessType.rw,
+                defaultvalue = "0",
+                PDOtype = PDOMappingType.optional,
+                objecttype = ObjectType.VAR
+            };
+
+            od.subobjects.Add(0x01, sub);
+
+            eds.ods.Add(0x2000, od);
+
+            string tempfile = System.IO.Path.GetTempFileName();
+            eds.Savefile(tempfile, InfoSection.Filetype.File_EDS);
+
+            eds = new EDSsharp();
+            eds.Loadfile(tempfile);
+
+            od = eds.ods[0x2000];
+
+            Assert.True(od.subobjects[1].PDOtype == PDOMappingType.optional, "TPDOMappingType.optional not set in EDS for REC");
+        }
+
+        [Fact]
+        public void TestImportExportArray()
+        {
+
+            // NOTE although can opennode does not support per array entry flags, they are supported in EDS
+            // so the  PDOtype and TPDODetectCos flags are set per array entry (every VAR sub object) but 
+            // they all must be the same
+            // and they should not exist on the parent object.
+
+            eds = new EDSsharp
+            {
+                ods = new System.Collections.Generic.SortedDictionary<ushort, ODentry>()
+            };
+
+            ODentry od = new ODentry
+            {
+                objecttype = ObjectType.ARRAY,
+                datatype = DataType.UNSIGNED32,
+                parameter_name = "Test Array",
+                accesstype = EDSsharp.AccessType.rw,
+                Index = 0x2000
+            };
+
+            ODentry sub = new ODentry
+            {
+                parameter_name = "max sub-index",
+                datatype = DataType.UNSIGNED8,
+                parent = od,
+                accesstype = EDSsharp.AccessType.ro,
+                PDOtype = PDOMappingType.no,
+                defaultvalue = "2",
+                objecttype = ObjectType.VAR
+            };
+
+            od.subobjects.Add(0x00, sub);
+
+            sub = new ODentry
+            {
+                parameter_name = "entry 1",
+                datatype = DataType.UNSIGNED32,
+                parent = od,
+                accesstype = EDSsharp.AccessType.rw,
+                defaultvalue = "0",
+                objecttype = ObjectType.VAR,
+                PDOtype = PDOMappingType.optional
+            };
+
+            od.subobjects.Add(0x01, sub);
+
+            sub = new ODentry
+            {
+                parameter_name = "entry 2",
+                datatype = DataType.UNSIGNED32,
+                parent = od,
+                accesstype = EDSsharp.AccessType.rw,
+                defaultvalue = "0",
+                objecttype = ObjectType.VAR,
+                PDOtype = PDOMappingType.optional
+            };
+
+            od.subobjects.Add(0x02, sub);
+
+            eds.ods.Add(0x2000, od);
+
+            string tempfile = System.IO.Path.GetTempFileName();
+            eds.Savefile(tempfile, InfoSection.Filetype.File_EDS);
+
+            eds = new EDSsharp();
+            eds.Loadfile(tempfile);
+
+            od = eds.ods[0x2000];
+
+            Assert.True(od.subobjects[1].PDOtype == PDOMappingType.optional, "TPDOMappingType.optional not set in EDS for ARRAY");
+        }
     }
 }
