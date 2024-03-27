@@ -1,5 +1,4 @@
-﻿using System;
-using Xunit;
+﻿using Xunit;
 using libEDSsharp;
 
 namespace Tests
@@ -35,8 +34,7 @@ namespace Tests
 
             od = eds.ods[0x2000];
 
-            if (od.PDOtype != PDOMappingType.optional)
-                throw new Exception("TPDOMappingType.optional not set in EDS for VAR");
+            Assert.True(od.PDOtype == PDOMappingType.optional, "TPDOMappingType.optional not set in EDS for VAR");
         }
 
         /// </summary>
@@ -87,8 +85,7 @@ namespace Tests
 
             od = eds.ods[0x2000];
 
-            if (od.subobjects[1].PDOtype != PDOMappingType.optional)
-                throw new Exception("TPDOMappingType.optional not set in EDS for REC");
+            Assert.True(od.subobjects[1].PDOtype == PDOMappingType.optional, "TPDOMappingType.optional not set in EDS for REC");
         }
 
         [Fact]
@@ -159,8 +156,7 @@ namespace Tests
 
             od = eds.ods[0x2000];
 
-            if (od.subobjects[1].PDOtype != PDOMappingType.optional)
-                throw new Exception("TPDOMappingType.optional not set in EDS for ARRAY");
+            Assert.True(od.subobjects[1].PDOtype == PDOMappingType.optional, "TPDOMappingType.optional not set in EDS for ARRAY");
         }
     }
 }
