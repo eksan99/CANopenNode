@@ -10,7 +10,6 @@ namespace Tests
         [Fact]
         public void TestImportExportVar()
         {
-
             eds = new EDSsharp
             {
                 ods = new System.Collections.Generic.SortedDictionary<ushort, ODentry>()
@@ -29,7 +28,7 @@ namespace Tests
             eds.ods.Add(0x2000, od);
 
             string tempfile = System.IO.Path.GetTempFileName();
-            eds.Savefile(tempfile,InfoSection.Filetype.File_EDS);
+            eds.Savefile(tempfile, InfoSection.Filetype.File_EDS);
 
             eds = new EDSsharp();
             eds.Loadfile(tempfile);
@@ -44,7 +43,6 @@ namespace Tests
         [Fact]
         public void TestImportExportRecord()
         {
-
             eds = new EDSsharp
             {
                 ods = new System.Collections.Generic.SortedDictionary<ushort, ODentry>()
@@ -65,7 +63,7 @@ namespace Tests
             sub.defaultvalue = "1";
             sub.PDOtype = PDOMappingType.no;
             sub.objecttype = ObjectType.VAR;
-           
+
             od.subobjects.Add(0x00, sub);
 
             sub = new ODentry();
@@ -122,7 +120,7 @@ namespace Tests
             sub.parent = od;
             sub.accesstype = EDSsharp.AccessType.ro;
             sub.PDOtype = PDOMappingType.no;
-       
+
 
             sub.defaultvalue = "2";
             sub.objecttype = ObjectType.VAR;
@@ -137,9 +135,9 @@ namespace Tests
             sub.defaultvalue = "0";
             sub.objecttype = ObjectType.VAR;
             sub.PDOtype = PDOMappingType.optional;
-   
+
             od.subobjects.Add(0x01, sub);
- 
+
             sub = new ODentry();
             sub.parameter_name = "entry 2";
             sub.datatype = DataType.UNSIGNED32;
@@ -148,7 +146,7 @@ namespace Tests
             sub.defaultvalue = "0";
             sub.objecttype = ObjectType.VAR;
             sub.PDOtype = PDOMappingType.optional;
-   
+
             od.subobjects.Add(0x02, sub);
 
             eds.ods.Add(0x2000, od);
@@ -163,11 +161,6 @@ namespace Tests
 
             if (od.subobjects[1].PDOtype != PDOMappingType.optional)
                 throw new Exception("TPDOMappingType.optional not set in EDS for ARRAY");
-
-
-
         }
-
-
     }
 }
