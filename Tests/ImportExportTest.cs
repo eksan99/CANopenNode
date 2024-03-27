@@ -1,14 +1,13 @@
 ﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using libEDSsharp;
 
 namespace Tests
 {
-    [TestClass]
     public class EdsImportExportTest : CanOpenNodeExporter
     {
         /// </summary>
-        [TestMethod]
+        [Fact]
         public void TestImportExportVar()
         {
 
@@ -23,7 +22,6 @@ namespace Tests
                 datatype = DataType.UNSIGNED8,
                 parameter_name = "Test VAR",
                 accesstype = EDSsharp.AccessType.ro,
-                TPDODetectCos = true,
                 PDOtype = PDOMappingType.optional,
                 Index = 0x2000
             };
@@ -38,16 +36,12 @@ namespace Tests
 
             od = eds.ods[0x2000];
 
-            if (od.TPDODetectCos == false)
-                throw new Exception("TPDODetect not set in EDS for VAR");
-
             if (od.PDOtype != PDOMappingType.optional)
                 throw new Exception("TPDOMappingType.optional not set in EDS for VAR");
-
         }
 
         /// </summary>
-        [TestMethod]
+        [Fact]
         public void TestImportExportRecord()
         {
 
@@ -58,7 +52,7 @@ namespace Tests
 
             ODentry od = new ODentry
             {
-                objecttype = ObjectType.REC,
+                objecttype = ObjectType.RECORD,
                 parameter_name = "Test REC",
                 Index = 0x2000
             };
@@ -82,7 +76,6 @@ namespace Tests
             sub.defaultvalue = "0";
             sub.PDOtype = PDOMappingType.optional;
             sub.objecttype = ObjectType.VAR;
-            sub.TPDODetectCos = true;
 
             od.subobjects.Add(0x01, sub);
 
@@ -96,15 +89,11 @@ namespace Tests
 
             od = eds.ods[0x2000];
 
-            if (od.subobjects[1].TPDODetectCos == false)
-                throw new Exception("TPDODetect not set in EDS for REC");
-
             if (od.subobjects[1].PDOtype != PDOMappingType.optional)
                 throw new Exception("TPDOMappingType.optional not set in EDS for REC");
-
         }
 
-        [TestMethod]
+        [Fact]
         public void TestImportExportArray()
         {
 
@@ -148,7 +137,6 @@ namespace Tests
             sub.defaultvalue = "0";
             sub.objecttype = ObjectType.VAR;
             sub.PDOtype = PDOMappingType.optional;
-            sub.TPDODetectCos = true;
    
             od.subobjects.Add(0x01, sub);
  
@@ -160,7 +148,6 @@ namespace Tests
             sub.defaultvalue = "0";
             sub.objecttype = ObjectType.VAR;
             sub.PDOtype = PDOMappingType.optional;
-            sub.TPDODetectCos = true;
    
             od.subobjects.Add(0x02, sub);
 
@@ -173,9 +160,6 @@ namespace Tests
             eds.Loadfile(tempfile);
 
             od = eds.ods[0x2000];
-
-            if (od.subobjects[1].TPDODetectCos == false)
-                throw new Exception("TPDODetect not set in EDS for ARRAY");
 
             if (od.subobjects[1].PDOtype != PDOMappingType.optional)
                 throw new Exception("TPDOMappingType.optional not set in EDS for ARRAY");
