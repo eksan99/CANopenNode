@@ -1314,40 +1314,6 @@ const CO_OD_entry_t CO_OD[CO_OD_NoOfElements] = {
             }
         }
 
-        public static string ParseString(string input)
-        {
-            var provider = new Microsoft.CSharp.CSharpCodeProvider();
-            var parameters = new System.CodeDom.Compiler.CompilerParameters()
-            {
-                GenerateExecutable = false,
-                GenerateInMemory = true,
-            };
-
-            var code = @"
-        namespace Tmp
-        {
-            public class TmpClass
-            {
-                public static string GetValue()
-                {
-                    return """ + input + @""";
-                }
-            }
-        }";
-
-            var compileResult = provider.CompileAssemblyFromSource(parameters, code);
-
-            if (compileResult.Errors.HasErrors)
-            {
-                throw new ArgumentException(compileResult.Errors.Cast<System.CodeDom.Compiler.CompilerError>().First(e => !e.IsWarning).ErrorText);
-            }
-
-            var asmb = compileResult.CompiledAssembly;
-            var method = asmb.GetType("Tmp.TmpClass").GetMethod("GetValue");
-
-            return method.Invoke(null, null) as string;
-        }
-
        protected string make_cname(string name,ODentry entry)
        {
             if (name == null)
