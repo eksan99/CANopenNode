@@ -24,10 +24,18 @@ using System.IO;
 
 namespace libEDSsharp
 {
+    /// <summary>
+    /// Documentation generator
+    /// </summary>
     public class DocumentationGen
     {
         StreamWriter file = null;
 
+        /// <summary>
+        /// Generate html documentation
+        /// </summary>
+        /// <param name="filepath">where the documentation should be saved</param>
+        /// <param name="eds">data to generate the documentation from</param>
         public void genhtmldoc(string filepath, EDSsharp eds)
         {
 
@@ -96,8 +104,11 @@ namespace libEDSsharp
 
 
         }
-
-        public void writeODentryhtml(ODentry od)
+        /// <summary>
+        /// Write a object dictionary html entry to file
+        /// </summary>
+        /// <param name="od">Object dictionary entry</param>
+        void writeODentryhtml(ODentry od)
         {
             if (od.parent == null)
             {
@@ -142,19 +153,32 @@ namespace libEDSsharp
             }
 
         }
-
-        public void write2linetablerow(string a,object b)
+        /// <summary>
+        /// Write a html table row with 2 elements to file
+        /// </summary>
+        /// <param name="a">element a</param>
+        /// <param name="b">element b</param>
+        void write2linetablerow(string a,object b)
         {
             if (b == null)
                 b = "";
             file.Write("<tr><td>{0}</td><td>{1}</td></tr>", a, b.ToString());
         }
-
-        public void write2linetableheader(string a, object b)
+        /// <summary>
+        /// Write a html table header with 2 elements to file
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        void write2linetableheader(string a, object b)
         {
             file.Write("<tr><th>{0}</th><th>{1}</th></tr>",a,b.ToString());
         }
-
+        /// <summary>
+        /// Generate markup documentation
+        /// </summary>
+        /// <param name="filepath">where the documentation should be created</param>
+        /// <param name="eds">data to generate the documentation from</param>
+        /// <param name="gitVersion">git version of this software</param>
         public void genmddoc(string filepath, EDSsharp eds, string gitVersion)
         {
             file = new StreamWriter(filepath, false);
@@ -253,8 +277,12 @@ Device Information
 
             file.Close();
         }
-
-        private void PrintPdoMd(EDSsharp eds, bool skipDisabled = false)
+        /// <summary>
+        /// Write a all PDO information in markup
+        /// </summary>
+        /// <param name="eds">data containing the information</param>
+        /// <param name="skipDisabled">skip disabled PDOs</param>
+        void PrintPdoMd(EDSsharp eds, bool skipDisabled = false)
         {
             var parameters = new SortedDictionary<UInt16, ODentry>();
             var mappings = new SortedDictionary<UInt16, ODentry>();
@@ -361,8 +389,11 @@ Device Information
                 file.WriteLine();
             }
         }
-
-        private void PrintODentryMd(ODentry od)
+        /// <summary>
+        /// Write a object dictionary markup entry to file
+        /// </summary>
+        /// <param name="od">Object dictionary entry</param>
+        void PrintODentryMd(ODentry od)
         {
             var descriptions = new List<string>();
 
@@ -410,8 +441,12 @@ Device Information
                 file.WriteLine(string.Join("\n", descriptions));
             }
         }
-
-        private string PrintDataType(ODentry od)
+        /// <summary>
+        /// Returns the datatype of a object dictionary
+        /// </summary>
+        /// <param name="od">the object dictionary entry</param>
+        /// <returns>datatype of the OD entry</returns>
+        string PrintDataType(ODentry od)
         {
             string dt = od.datatype.ToString();
             if ((od.datatype == DataType.VISIBLE_STRING || od.datatype == DataType.UNICODE_STRING)

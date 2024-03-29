@@ -33,10 +33,16 @@ using System.Text.RegularExpressions;
 
 namespace libEDSsharp
 {
+    /// <summary>
+    /// Converts between CanOpenXML and EDSsharp
+    /// </summary>
     public class Bridge
     {
-
-
+        /// <summary>
+        /// Convert from EDSsharp to CanOpenXML
+        /// </summary>
+        /// <param name="eds">the eds data</param>
+        /// <returns>CanOpenXML device containing data from eds</returns>
         public Device convert(EDSsharp eds)
         {
             eds.UpdatePDOcount();
@@ -269,6 +275,11 @@ namespace libEDSsharp
             return cl;
         }
 
+        /// <summary>
+        /// Convert from CanOpenXML to EDSsharp
+        /// </summary>
+        /// <param name="dev">CanOpenXML device</param>
+        /// <returns>EDSsharp object containing data from dev</returns>
         public EDSsharp convert(Device dev)
         {
             EDSsharp eds = new EDSsharp();

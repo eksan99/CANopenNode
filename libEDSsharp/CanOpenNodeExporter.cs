@@ -31,7 +31,9 @@ using System.IO;
 
 namespace libEDSsharp
 {
-
+    /// <summary>
+    /// Export .c and .h files for CanOpenNode v1-3
+    /// </summary>
     public class CanOpenNodeExporter : IExporter
     {
 
@@ -1347,7 +1349,12 @@ const CO_OD_entry_t CO_OD[CO_OD_NoOfElements] = {
 
             return method.Invoke(null, null) as string;
         }
-
+        /// <summary>
+        /// Generates a valid C language variable name using input
+        /// </summary>
+        /// <param name="name">base name that will be used to make a variable name</param>
+        /// <param name="entry">the OD entry for the variable</param>
+        /// <returns></returns>
        protected string make_cname(string name,ODentry entry)
        {
             if (name == null)
