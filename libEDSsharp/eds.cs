@@ -184,6 +184,9 @@ namespace libEDSsharp
         /// </summary>
         public bool CO_disabled = false;
         public string CO_countLabel = "";
+        /// <summary>
+        /// CanOpenNode storage group
+        /// </summary>
         public string CO_storageGroup = "RAM";
         public bool CO_flagsPDO = false;
         public AccessSRDO CO_accessSRDO = AccessSRDO.no;
@@ -287,17 +290,27 @@ namespace libEDSsharp
             }
         }
     }
-
+    /// <summary>
+    /// Indicate that it should be exported in EDS files and may have some data about how
+    /// </summary>
     public class EdsExport : Attribute
     {
+        /// <summary>
+        /// Max length of the string when exported
+        /// </summary>
         public UInt16 maxlength;
         public bool commentonly=false;
 
-        //mehmeh
+        /// <summary>
+        /// default constructor
+        /// </summary>
         public EdsExport()
         {
         }
-
+        /// <summary>
+        /// contstructor with max string length
+        /// </summary>
+        /// <param name="maxlength">max length of the string when exported</param>
         public EdsExport(UInt16 maxlength)
         {
             this.maxlength = maxlength;
@@ -310,7 +323,9 @@ namespace libEDSsharp
 
       
     }
-
+    /// <summary>
+    /// Indicate that it should be exported in DCF files
+    /// </summary>
     public class DcfExport : EdsExport
     {
     }
@@ -1210,7 +1225,9 @@ namespace libEDSsharp
         }
 
     }
-
+    /// <summary>
+    /// Represent object dictionary index and subindex objects
+    /// </summary>
     public class ODentry
     {
         private UInt16 _index;
@@ -1256,22 +1273,39 @@ namespace libEDSsharp
         [DcfExport]
         public string denotation = "";
 
+        /// <summary>
+        /// object type var,rec, array etc.
+        /// </summary>
         [EdsExport]
         public ObjectType objecttype = ObjectType.UNKNOWN;
+        /// <summary>
+        /// data type bool, integer etc.
+        /// </summary>
         [EdsExport]
         public DataType datatype = DataType.UNKNOWN;
+        /// <summary>
+        /// access type
+        /// </summary>
         [EdsExport]
         public EDSsharp.AccessType accesstype = EDSsharp.AccessType.UNKNOWN;
-
+        /// <summary>
+        /// default value
+        /// </summary>
         [EdsExport]
         public string defaultvalue = "";
-
+        /// <summary>
+        /// low numeric limit
+        /// </summary>
         [EdsExport]
         public string LowLimit = "";
-
+        /// <summary>
+        /// high numeric limit
+        /// </summary>
         [EdsExport]
         public string HighLimit = "";
-
+        /// <summary>
+        /// actual value
+        /// </summary>
         [DcfExport]
         public string actualvalue = "";
 
@@ -1280,7 +1314,9 @@ namespace libEDSsharp
 
         [EdsExport]
         public byte CompactSubObj = 0;
-
+        /// <summary>
+        /// true if it is PDO mapping object
+        /// </summary>
         [EdsExport]
         public bool PDOMapping
         {
@@ -1887,7 +1923,11 @@ namespace libEDSsharp
                 return subobjects[no];
             return null;
         }
-
+        /// <summary>
+        /// Returns default value for a subindex
+        /// </summary>
+        /// <param name="no">subindex to get the default value for</param>
+        /// <returns>default value for that subindex or "" if the subindex was not found</returns>
         public string Getsubobjectdefaultvalue(UInt16 no)
         {
             if (subobjects.ContainsKey(no))
@@ -1895,7 +1935,11 @@ namespace libEDSsharp
             else
                 return "";
         }
-
+        /// <summary>
+        /// Returns true if the object contains a subindex
+        /// </summary>
+        /// <param name="no">the subindex to look for</param>
+        /// <returns>true if it contains the subindex</returns>
         public bool Containssubindex(UInt16 no)
         {
             if (subobjects.ContainsKey(no))
@@ -1904,7 +1948,10 @@ namespace libEDSsharp
             return false;
         }
 
-
+        /// <summary>
+        /// Return max indicated subindex, or null if not array or record
+        /// </summary>
+        /// <returns></returns>
         public byte Getmaxsubindex()
         {
             //Although subindex 0 should contain the max subindex value
@@ -1950,7 +1997,9 @@ namespace libEDSsharp
                 }
             }
         }
-
+        /// <summary>
+        /// Subindex of this object if it is a subindex object, 0 if not
+        /// </summary>
         public UInt16 Subindex
         { 
             get
@@ -1963,7 +2012,11 @@ namespace libEDSsharp
 
             }
         }
-
+        /// <summary>
+        /// Look for a entry in the subindexs, return the index if found
+        /// </summary>
+        /// <param name="od">the OD entry to look for in the subindex objects</param>
+        /// <returns>the subindex if found or 0 if not found</returns>
         public UInt16 Findsubindex(ODentry od)
         {
             foreach(KeyValuePair<UInt16,ODentry>kvp in subobjects )
@@ -3171,7 +3224,12 @@ namespace libEDSsharp
 
         }
 
-        //Split on + , replace $NODEID with concrete value and add together
+        /// <summary>
+        /// Split on + , replace $NODEID with concrete value and add together
+        /// </summary>
+        /// <param name="input">input string containing a number maybe prefixed by $NODEID+ </param>
+        /// <param name="nodeidpresent">if $NODEID is in the string</param>
+        /// <returns></returns>
         public UInt32 GetNodeID(string input, out bool nodeidpresent)
         {
 
