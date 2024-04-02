@@ -28,7 +28,6 @@ using CanOpenXSD_1_1;
 using System.Runtime.Remoting.Messaging;
 using System.Net.NetworkInformation;
 using System.Security.Cryptography;
-using Xml2CSharp;
 
 namespace libEDSsharp
 {

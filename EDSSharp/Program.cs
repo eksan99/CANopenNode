@@ -60,10 +60,6 @@ namespace EDSSharp
                             openXDDfile(infile, outfile,type);
                             break;
 
-                        case ".xml":
-                            openXMLfile(infile,outfile,type);
-                            break;
-
                         case ".eds":
                             openEDSfile(infile, outfile,InfoSection.Filetype.File_EDS,type);
                             break;
@@ -76,7 +72,7 @@ namespace EDSSharp
                 }
                 else
                 {
-                    Console.WriteLine("Usage EDSEditor --type [CanOpenNode|CanOpenNodeV4] --infile file.[xdd|eds|xml] --outfile [CO_OD.c|OD]");
+                    Console.WriteLine("Usage EDSEditor --type [CanOpenNode|CanOpenNodeV4] --infile file.[xdd|eds] --outfile [CO_OD.c|OD]");
                 }
             }
             catch(Exception e)
@@ -114,21 +110,6 @@ namespace EDSSharp
             {
                 Console.WriteLine("WARNING :" + warning);
             }
-
-        }
-
-        private static void openXMLfile(string path,string outpath,ExporterFactory.Exporter exportertype)
-        {
-
-            CanOpenXML coxml = new CanOpenXML();
-            coxml.readXML(path);
-
-            Bridge b = new Bridge();
-
-            eds = b.convert(coxml.dev);
-
-            eds.projectFilename = path;
-            exportCOOD(outpath,exportertype);
 
         }
 

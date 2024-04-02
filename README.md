@@ -69,10 +69,6 @@ Library
 * Read EDS/DCF/XDC file and parse contents to approprate classes
 * Dump EDS/DCF classes via ToString()
 * Save EDS/DCF classes back to EDS file
-* Read CanOpenNode xml project file
-* Write CanOpenNode xmlproject file
-* Switch formats between EDS/DCF and CanOpenNode XML (note to EDS will result in
-  data loss as the format supports less information).
 * Export C and H files in CanOpenNode format CO_OD.c and CO_OD.h
 * EDS/DCF supports modules
 * EDS/DCF supports compactPDO (read only) 1*
@@ -88,8 +84,6 @@ GUI
 * Open multiple devices
 * Open EDS/DCF/XDC files
 * Save EDS/DCF/XDC files
-* Open CanOpenNode XML Project file
-* Save CanOpenNode XML File
 * View OD Entries and explore the Object Dictionary
 * Add new OD entries
 * Delete exisiting OD entries

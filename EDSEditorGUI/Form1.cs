@@ -25,7 +25,6 @@ using System.Linq;
 using System.Windows.Forms;
 using System.IO;
 using libEDSsharp;
-using Xml2CSharp;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace ODEditor
@@ -140,13 +139,6 @@ namespace ODEditor
                         CanOpenXDD_1_1 coxml_1_1 = new CanOpenXDD_1_1();
                         eds = coxml_1_1.ReadXML(filename);
                         break;
-
-                    case ".xml":
-                        CanOpenXML coxml = new CanOpenXML();
-                        coxml.readXML(filename);
-                        Bridge b = new Bridge();
-                        eds = b.convert(coxml.dev);
-                        break;
                 }
 
                 if (eds == null)
@@ -196,11 +188,8 @@ namespace ODEditor
             try
             {
                 EDSsharp eds = new EDSsharp();
-                Device dev; 
 
                 eds.Loadfile(path);
-                Bridge bridge = new Bridge(); //tell me again why bridge is not static?
-                dev = bridge.convert(eds);
 
                 DeviceView device = new DeviceView(eds, network);
 
@@ -288,13 +277,12 @@ namespace ODEditor
             Warnings.warning_list.Clear();
 
             OpenFileDialog odf = new OpenFileDialog();
-            odf.Filter = "All supported files (*.xdd;*.xdc;*.xpd;*.eds;*.dcf;*.xml)|*.xdd;*.xdc;*.xpd;*.eds;*.dcf;*.xml|"
+            odf.Filter = "All supported files (*.xdd;*.xdc;*.xpd;*.eds;*.dcf)|*.xdd;*.xdc;*.xpd;*.eds;*.dcf|"
                        + "CANopen XDD (*.xdd)|*.xdd|"
                        + "CANopen XDC (*.xdc)|*.xdc|"
                        + "CANopen XPD (*.xpd)|*.xpd|"
                        + "Electronic Data Sheet (*.eds)|*.eds|"
-                       + "Device Configuration File (*.dcf)|*.dcf|"
-                       + "CANopenNode XML, old (*.xml)|*.xml";
+                       + "Device Configuration File (*.dcf)|*.dcf";
 
             if (odf.ShowDialog() == DialogResult.OK)
             {
@@ -305,10 +293,6 @@ namespace ODEditor
                     case ".xdc":
                     case ".xpd":
                         openXDDfile(odf.FileName);
-                        break;
-
-                    case ".xml":
-                        openXMLfile(odf.FileName);
                         break;
 
                     case ".eds":
@@ -381,50 +365,6 @@ namespace ODEditor
             }
 
 
-
-        }
-
-        private void openXMLfile(string path)
-        {
-
-            try
-            {
-                EDSsharp eds;
-                Device dev; //one day this will be multiple devices
-
-                CanOpenXML coxml = new CanOpenXML();
-                coxml.readXML(path);
-
-                Bridge b = new Bridge();
-
-                eds = b.convert(coxml.dev);
-                eds.projectFilename = path;
-
-                dev = coxml.dev;
-
-                tabControl1.TabPages.Add(eds.di.ProductName);
-
-                DeviceView device = new DeviceView(eds, network);
-                device.UpdateODViewForEDS += Device_UpdateODViewForEDS;
-                eds.OnDataDirty += Eds_onDataDirty;
-
-                tabControl1.TabPages[tabControl1.TabPages.Count - 1].Controls.Add(device);
-
-                device.Dock = DockStyle.Fill;
-                device.dispatch_updateOD();
-
-                network.Add(eds);
-            }
-            catch (Exception ex)
-            {
-                Warnings.warning_list.Add(ex.ToString());
-            }
-
-            if (Warnings.warning_list.Count != 0)
-            {
-                WarningsFrm frm = new WarningsFrm();
-                frm.Show();
-            }
 
         }
 
@@ -544,8 +484,7 @@ namespace ODEditor
                            + "Electronic Data Sheet (*.eds)|*.eds|"
                            + "Device Configuration File (*.dcf)|*.dcf|"
                            + "Documentation (*.md)|*.md|"
-                           + "CANopen XDD v1.0, old (*.xdd)|*.xdd|"
-                           + "CANopenNode XML, old (*.xml)|*.xml";
+                           + "CANopen XDD v1.0, old (*.xdd)|*.xdd";
 
                 sfd.InitialDirectory = Path.GetDirectoryName(dv.eds.projectFilename);
                 sfd.RestoreDirectory = true;
@@ -630,16 +569,6 @@ namespace ODEditor
                     DocumentationGen docgen = new DocumentationGen();
                     docgen.genmddoc(FileName, dv.eds, this.gitVersion);
                     dv.eds.mdfilename = FileName;
-                    break;
-
-                case ".xml":
-                    Bridge b = new Bridge();
-                    Device d = b.convert(dv.eds);
-
-                    CanOpenXML coxml = new CanOpenXML();
-                    coxml.dev = d;
-                    coxml.writeXML(FileName);
-                    dv.eds.xmlfilename = FileName;
                     break;
 
                 case ".xdd":
@@ -751,16 +680,12 @@ namespace ODEditor
             if (ext != null)
                 ext = ext.ToLower();
 
-            if ( ext == ".xml" )
-                openXMLfile(filepath);
             if (ext == ".xdd" || ext == ".xdc" || ext == ".xpd")
                 openXDDfile(filepath);
             if ( ext == ".eds" )
                 openEDSfile(filepath, InfoSection.Filetype.File_EDS);
             if (ext == ".dcf")
                 openEDSfile(filepath, InfoSection.Filetype.File_DCF);
-            if (ext == ".nxml")
-                openNetworkfile(filepath);
 
         }
 
@@ -856,8 +781,7 @@ namespace ODEditor
 
             sfd.Filter = "CANopen Network XDD v1.1 (*.nxdd)|*.nxdd|"
                        + "CANopen Network XDC v1.1 (*.nxdc)|*.nxdc|"
-                       + "CANopen Network XDD v1.0, old (*.nxdd)|*.nxdd|"
-                       + "CANopenNode network XML, old (*.nxml)|*.nxml";
+                       + "CANopen Network XDD v1.0, old (*.nxdd)|*.nxdd";
 
             sfd.InitialDirectory = Path.GetDirectoryName(networkfilename);
             sfd.RestoreDirectory = true;
@@ -867,12 +791,6 @@ namespace ODEditor
             {
                 switch (sfd.FilterIndex)
                 {
-                    case 4: // .nxml
-                        NetworkXML net = new NetworkXML();
-                        net.writeXML(sfd.FileName, network);
-                        addtoMRU(sfd.FileName);
-                        break;
-
                     case 3: // .nxdd V1.0
                         CanOpenXDD xdd = new CanOpenXDD();
                         xdd.writeMultiXML(sfd.FileName, network);
@@ -895,19 +813,14 @@ namespace ODEditor
         {
 
             OpenFileDialog odf = new OpenFileDialog();
-            odf.Filter = "All supported files (*.nxdd;*.nxdc;*.nxml)|*.nxdd;*.nxdc;*.nxml|"
+            odf.Filter = "All supported files (*.nxdd;*.nxdc)|*.nxdd;*.nxdc|"
                        + "CANopen Network XDD (*.nxdd)|*.nxdd|"
-                       + "CANopen Network XDC (*.nxdc)|*.nxdc|"
-                       + "CANopenNode network XML, old (*.nxml)|*.nxml";
+                       + "CANopen Network XDC (*.nxdc)|*.nxdc|";
 
             if (odf.ShowDialog() == DialogResult.OK)
             {
                 switch (Path.GetExtension(odf.FileName).ToLower())
                 {
-                    case ".nxml":
-                        openNetworkfile(odf.FileName);
-                        break;
-
                     case ".nxdd":
                     case ".nxdc":
                         openXDDNetworkfile(odf.FileName);
@@ -951,38 +864,6 @@ namespace ODEditor
             addtoMRU(file);
             networkfilename = file;
 
-        }
-
-        private void openNetworkfile(string file)
-        {
-            NetworkXML net = new NetworkXML();
-            List<Device> devs = net.readXML(file);
-
-            foreach (Device d in devs)
-            {
-                Bridge b = new Bridge();
-
-                EDSsharp eds = b.convert(d);
-                //eds.filename = path;  //fixme: We need to save the projectfilename or SaveAs will throw an exception
-
-                tabControl1.TabPages.Add(eds.di.ProductName);
-                
-
-                DeviceView device = new DeviceView(eds, network);
-
-                tabControl1.TabPages[tabControl1.TabPages.Count - 1].Controls.Add(device);
-                device.Dock = DockStyle.Fill;
-
-                network.Add(eds);
-                device.UpdateODViewForEDS += Device_UpdateODViewForEDS;
-                eds.OnDataDirty += Eds_onDataDirty;
-
-                device.dispatch_updateOD();
-
-                addtoMRU(file);
-            }
-
-            networkfilename = file;
         }
 
         private void networkPDOToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1305,20 +1186,12 @@ namespace ODEditor
                                 openXDDfile(fileName);
                                 break;
 
-                            case ".xml":
-                                openXMLfile(fileName);
-                                break;
-
                             case ".eds":
                                 openEDSfile(fileName, InfoSection.Filetype.File_EDS);
                                 break;
 
                             case ".dcf":
                                 openEDSfile(fileName, InfoSection.Filetype.File_DCF);
-                                break;
-
-                            case ".nxml":
-                                openNetworkfile(fileName);
                                 break;
 
                             case ".nxdc":
