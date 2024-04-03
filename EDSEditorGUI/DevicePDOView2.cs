@@ -422,7 +422,9 @@ namespace ODEditor
 
 
             SourceGrid.Cells.Editors.ComboBox comboStandard = new SourceGrid.Cells.Editors.ComboBox(typeof(string), srray, false);
+            #if !NETCOREAPP
             comboStandard.Control.DropDownWidth = 0x100;
+            #endif
             comboStandard.Changed += ComboStandard_Changed;
 
             //tableLayoutPanel1.SuspendLayout();

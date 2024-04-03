@@ -8,6 +8,10 @@ on:
 
 jobs:
   build:
+    strategy:
+      matrix:
+        dotnet: [net481, net6]
+        configuration: [Debug, Release]
 
     runs-on: windows-latest
 #    runs-on: ubuntu-latest # Error: setup-msbuild can only be run on Windows runners
@@ -31,14 +35,13 @@ jobs:
     - name: Build
 #      run: make all # builds the Debug configuration
       run: |
-        msbuild /property:Configuration=Release
-        msbuild /property:Configuration=Debug
+        msbuild -p:Build${{ matrix.dotnet }}=true /property:Configuration=${{ matrix.configuration }}
 #      run: dotnet build --no-restore
     - name: Test
       run: |
-          dotnet test --no-build --verbosity normal
+          dotnet test --no-build --verbosity normal Tests\bin\${{ matrix.configuration }}\${{ matrix.dotnet }}*\tests.dll
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: EDSEditor
+        name: EDSEditor_${{ matrix.dotnet }}
         path: EDSEditorGUI\bin\Release\

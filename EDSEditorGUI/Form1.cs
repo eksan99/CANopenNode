@@ -22,6 +22,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using System.IO;
 using libEDSsharp;
@@ -956,7 +957,10 @@ namespace ODEditor
                     DocumentationGen docgen = new DocumentationGen();
                     docgen.genhtmldoc(temp, dv.eds);
                     docgen.genmddoc(temp2, dv.eds, this.gitVersion);
-                    System.Diagnostics.Process.Start("file://" + temp2);
+                    if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                    {
+                        System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("cmd", $"/c start {temp2}"));
+                    }
                     if (IsRunningOnMono())
                     {
                         System.Diagnostics.Process.Start("file://" + temp);
