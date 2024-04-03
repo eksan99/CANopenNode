@@ -32,7 +32,9 @@ using Xml2CSharp;
 namespace libEDSsharp
 {
 
-   
+    /// <summary>
+    /// Object dictionary data types from CiA 301
+    /// </summary>
     public enum DataType
     {
         UNKNOWN = 0,
@@ -68,16 +70,43 @@ namespace libEDSsharp
         IDENTITY = 0x23,
 
     }
-
+    /// <summary>
+    /// Object Dictionary object definitions from CiA 301
+    /// </summary>
     public enum ObjectType
     {
         UNKNOWN = -1,
+        /// <summary>
+        /// An object with no data fields
+        /// </summary>
         NULL = 0,
+        /// <summary>
+        /// Large variable amount of data e.g. executable program code
+        /// </summary>
         DOMAIN =2,
+        /// <summary>
+        /// Denotes a type definition such as a BOOLEAN, UNSIGNED16, FLOAT and so on
+        /// </summary>
         DEFTYPE=5,
+        /// <summary>
+        /// Defines a new record type e.g. the PDO mapping structure at 21h
+        /// </summary>
         DEFSTRUCT=6,
+        /// <summary>
+        /// A single value such as an UNSIGNED8, BOOLEAN, FLOAT, INTEGER16, VISIBLE STRING etc.
+        /// </summary>
         VAR = 7,
+        /// <summary>
+        /// A multiple data field object where each data field is a 
+        /// simple variable of the SAME basic data type e.g. array of UNSIGNED16 etc.
+        /// Sub-index 0 is of UNSIGNED8 and therefore not part of the ARRAY data
+        /// </summary>
         ARRAY = 8,
+        /// <summary>
+        /// A multiple data field object where the data fields may be any combination of
+        /// simple variables. Sub-index 0 is of UNSIGNED8 and sub-index 255 is of UNSIGNED32 and
+        /// therefore not part of the RECORD data
+        /// </summary>
         RECORD = 9,
     }
 
@@ -90,19 +119,49 @@ namespace libEDSsharp
         @default=4,
     }
 
+    /// <summary>
+    /// Defines how the object can be changed from SDO
+    /// </summary>
     public enum AccessSDO
     {
+        /// <summary>
+        /// no access
+        /// </summary>
         no,
+        /// <summary>
+        /// read only access
+        /// </summary>
         ro,
+        /// <summary>
+        /// write only access
+        /// </summary>
         wo,
+        /// <summary>
+        /// read and write access
+        /// </summary>
         rw
     }
 
+    /// <summary>
+    /// Defines how the object can be changed from PDO
+    /// </summary>
     public enum AccessPDO
     {
+        /// <summary>
+        /// no access
+        /// </summary>
         no,
+        /// <summary>
+        /// TPDO access
+        /// </summary>
         t,
+        /// <summary>
+        /// RPDO access
+        /// </summary>
         r,
+        /// <summary>
+        /// TPDO and RPDO access
+        /// </summary>
         tr
     }
 
@@ -119,13 +178,26 @@ namespace libEDSsharp
     /// </summary>
     public class CustomProperties
     {
-        public bool CO_disabled = false;  // If true, object is completelly skipped by CANopenNode exporters, etc.
+        /// <summary>
+        /// If true, object is completelly skipped by CANopenNode exporters, etc.
+        /// </summary>
+        public bool CO_disabled = false;
         public string CO_countLabel = "";
+        /// <summary>
+        /// CanOpenNode storage group
+        /// </summary>
         public string CO_storageGroup = "RAM";
         public bool CO_flagsPDO = false;
         public AccessSRDO CO_accessSRDO = AccessSRDO.no;
+        /// <summary>
+        /// Minimum length of a string that can be stored   
+        /// </summary>
         public UInt32 CO_stringLengthMin = 0;
 
+        /// <summary>
+        /// Deep clone
+        /// </summary>
+        /// <returns>a deep clone</returns>
         public CustomProperties Clone()
         {
             return new CustomProperties
@@ -138,7 +210,10 @@ namespace libEDSsharp
                 CO_stringLengthMin = CO_stringLengthMin
             };
         }
-
+        /// <summary>
+        /// Convert from XSD to EDS
+        /// </summary>
+        /// <param name="properties">raw custom properties from XSD</param>
         public void OdeXdd(property[] properties)
         {
             if (properties != null)
@@ -163,7 +238,10 @@ namespace libEDSsharp
                 }
             }
         }
-
+        /// <summary>
+        /// Convert custom properties from EDS to XSD
+        /// </summary>
+        /// <returns>XSD properties ready to use</returns>
         public property[] OdeXdd()
         {
             var props = new List<property>();
@@ -211,17 +289,27 @@ namespace libEDSsharp
             }
         }
     }
-
+    /// <summary>
+    /// Indicate that it should be exported in EDS files and may have some data about how
+    /// </summary>
     public class EdsExport : Attribute
     {
+        /// <summary>
+        /// Max length of the string when exported
+        /// </summary>
         public UInt16 maxlength;
         public bool commentonly=false;
 
-        //mehmeh
+        /// <summary>
+        /// default constructor
+        /// </summary>
         public EdsExport()
         {
         }
-
+        /// <summary>
+        /// contstructor with max string length
+        /// </summary>
+        /// <param name="maxlength">max length of the string when exported</param>
         public EdsExport(UInt16 maxlength)
         {
             this.maxlength = maxlength;
@@ -234,11 +322,16 @@ namespace libEDSsharp
 
       
     }
-
+    /// <summary>
+    /// Indicate that it should be exported in DCF files
+    /// </summary>
     public class DcfExport : EdsExport
     {
     }
 
+    /// <summary>
+    /// Section of info in EDS or DCF file
+    /// </summary>
     public class InfoSection
     {
         protected Dictionary<string, string> section;
@@ -336,7 +429,10 @@ namespace libEDSsharp
 
             return false;
         }
-
+        /// <summary>
+        /// Returns a string that represents the current object.
+        /// </summary>
+        /// <returns>A string that represents the current object.</returns>
         public override string ToString()
         {
             string msg;
@@ -355,7 +451,11 @@ namespace libEDSsharp
 
             return msg;
         }
-
+        /// <summary>
+        /// Write object to stream
+        /// </summary>
+        /// <param name="writer">stream to write the data to</param>
+        /// <param name="ft">file type</param>
         public void Write(StreamWriter writer, Filetype ft)
         {
             writer.WriteLine("[" + edssection + "]");
@@ -486,7 +586,10 @@ namespace libEDSsharp
                 objectlist.Add(count, target);
             }
         }
-
+        /// <summary>
+        /// Returns a string that represents the current object.
+        /// </summary>
+        /// <returns>A string that represents the current object.</returns>
         public override string ToString()
         {
             string msg;
@@ -503,7 +606,10 @@ namespace libEDSsharp
             return msg;
 
         }
-
+        /// <summary>
+        /// Write object to stream
+        /// </summary>
+        /// <param name="writer">stream to write the data to</param>
         public void Write(StreamWriter writer)
         {
             writer.WriteLine("[" + edssection + "]");
@@ -547,7 +653,10 @@ namespace libEDSsharp
 
             }
         }
-
+        /// <summary>
+        /// Returns a string that represents the current object.
+        /// </summary>
+        /// <returns>A string that represents the current object.</returns>
         public override string ToString()
         {
             string msg;
@@ -564,7 +673,10 @@ namespace libEDSsharp
             return msg;
 
         }
-
+        /// <summary>
+        /// Write object to stream
+        /// </summary>
+        /// <param name="writer">stream to write the data to</param>
         public void Write(StreamWriter writer)
         {
             if(comments == null)
@@ -618,13 +730,25 @@ namespace libEDSsharp
         }
     }
 
+    /// <summary>
+    /// FileInfo section as described in CiA 306
+    /// </summary>
     public class FileInfo : InfoSection
     {
         // Only for internal usage, use Path.GetFileName(eds.projectFilename) instead.
+        /// <summary>
+        /// indicate the file name (according to OS restrictions)
+        /// </summary>
         [EdsExport]
         public string FileName="";
+        /// <summary>
+        /// indicate the actual file version (Unsigned8)
+        /// </summary>
         [EdsExport]
         public string FileVersion="";
+        /// <summary>
+        /// indicate the actual file revision (Unsigned8)
+        /// </summary>
         [EdsExport]
         public byte FileRevision;//=1
 
@@ -634,28 +758,48 @@ namespace libEDSsharp
         public byte EDSVersionMajor;//=4.0
         
         public byte EDSVersionMinor;//=4.0
+        /// <summary>
+        /// indicate the version of the specification (3 characters) in the format x.y
+        /// </summary>
         [EdsExport]
         public string EDSVersion="";
-
+        /// <summary>
+        /// file description (max 243 characters)
+        /// </summary>
         [EdsExport(maxlength=243)]
         public string Description="";//= //max 243 characters
-
         public DateTime CreationDateTime;//
+        /// <summary>
+        /// file creation time (characters in format hh:mm(AM|PM)),
+        /// </summary>
         [EdsExport]
         public string CreationTime="";
+        /// <summary>
+        /// provide the date of file creation (characters in format mm-dd-yyyy)
+        /// </summary>
         [EdsExport]
         public string CreationDate="";
-
+        /// <summary>
+        /// name or a description of the file creator (max. 245 characters)
+        /// </summary>
         [EdsExport(maxlength = 245)]
         public string CreatedBy = "";//=CANFestival //max245
         
         public DateTime ModificationDateTime;//
 
+        /// <summary>
+        /// time of last modification (characters in format hh:mm(AM|PM))
+        /// </summary>
         [EdsExport]
         public string ModificationTime="";
+        /// <summary>
+        ///  date of the last file modification (characters in format mm-dd-yyyy)
+        /// </summary>
         [EdsExport]
         public string ModificationDate="";
-
+        /// <summary>
+        /// name or a description of the creator (max. 244 characters)
+        /// </summary>
         [EdsExport(maxlength = 244)]
         public string ModifiedBy="";//=CANFestival //max244
 
@@ -734,62 +878,122 @@ namespace libEDSsharp
         }
     }
 
+    /// <summary>
+    /// DeviceInfo section as described in CiA 306
+    /// </summary>
     public class DeviceInfo : InfoSection
     {
-
+        /// <summary>
+        /// vendor name (max. 244 characters)
+        /// </summary>
         [EdsExport]
         public string VendorName="";
+        /// <summary>
+        /// unique vendor ID according to identity object sub-index 01h (Unsigned32) 
+        /// </summary>
         [EdsExport]
         public string VendorNumber="";
-
+        /// <summary>
+        /// product name (max. 243 characters)
+        /// </summary>
         [EdsExport]
         public string ProductName="";
+        /// <summary>
+        /// product code according to identity object sub-index 02h (Unsigned32)
+        /// </summary>
         [EdsExport]
         public string ProductNumber="";
+        /// <summary>
+        /// product revision number according to identity object sub-index 03h (Unsigned32) 
+        /// </summary>
         [EdsExport]
         public UInt32 RevisionNumber;
 
+        /// <summary>
+        /// indicate the supported baud rates (Boolean, 0 = not supported, 1=supported)
+        /// </summary>
         [EdsExport]
         public bool BaudRate_10 = false;
+        /// <summary>
+        /// indicate the supported baud rates (Boolean, 0 = not supported, 1=supported)
+        /// </summary>
         [EdsExport]
         public bool BaudRate_20 = false;
+        /// <summary>
+        /// indicate the supported baud rates (Boolean, 0 = not supported, 1=supported)
+        /// </summary>
         [EdsExport]
         public bool BaudRate_50 = false;
+        /// <summary>
+        /// indicate the supported baud rates (Boolean, 0 = not supported, 1=supported)
+        /// </summary>
         [EdsExport]
         public bool BaudRate_125 = false;
+        /// <summary>
+        /// indicate the supported baud rates (Boolean, 0 = not supported, 1=supported)
+        /// </summary>
         [EdsExport]
         public bool BaudRate_250 = false;
+        /// <summary>
+        /// indicate the supported baud rates (Boolean, 0 = not supported, 1=supported)
+        /// </summary>
         [EdsExport]
         public bool BaudRate_500 = false;
+        /// <summary>
+        /// indicate the supported baud rates (Boolean, 0 = not supported, 1=supported)
+        /// </summary>
         [EdsExport]
         public bool BaudRate_800 = false;
+        /// <summary>
+        /// indicate the supported baud rates (Boolean, 0 = not supported, 1=supported)
+        /// </summary>
         [EdsExport]
         public bool BaudRate_1000 = false;
 
         public bool BaudRate_auto = false;
 
+        /// <summary>
+        /// indicate the simple boot-up master functionality (Boolean, 0 = not supported, 1 = supported), 
+        /// </summary>
         [EdsExport]
         public bool SimpleBootUpMaster;
+        /// <summary>
+        /// indicate the simple boot-up slave functionality (Boolean, 0 = not supported, 1 = supported),
+        /// </summary>
         [EdsExport]
         public bool SimpleBootUpSlave;
-
+        /// <summary>
+        /// granularity allowed for the mapping on this device - 
+        /// most of the existing devices support a granularity of 8 (Unsigned8; 0 - mapping not modifiable, 1-64 granularity) 
+        /// </summary>
         [EdsExport]
         public byte Granularity = 8;
+        /// <summary>
+        /// Indicate the facility of dynamic variable generation. If the value is unequal to 0, the additional section DynamicChannels exists (CiA302 and CiA405) 
+        /// </summary>
         [EdsExport]
         public bool DynamicChannelsSupported;
 
         [EdsExport]
         public byte CompactPDO;
-
+        /// <summary>
+        /// indicate the facility of multiplexed PDOs. (Boolean, 0 = not supported, 1 = supported)
+        /// </summary>
         [EdsExport]
         public bool GroupMessaging;
-
+        /// <summary>
+        /// indicate the number of supported receive PDOs. (Unsigned16)
+        /// </summary>
         [EdsExport]
         public UInt16 NrOfRXPDO;
-
+        /// <summary>
+        /// indicate the number of supported transmit PDOs. (Unsigned16) 
+        /// </summary>
         [EdsExport]
         public UInt16 NrOfTXPDO;
-
+        /// <summary>
+        /// indicate if LSS functionality is supported (Boolean, 0 = not supported, 1 = supported) 
+        /// </summary>
         [EdsExport]
         public bool LSS_Supported;
 
@@ -1020,7 +1224,9 @@ namespace libEDSsharp
         }
 
     }
-
+    /// <summary>
+    /// Represent object dictionary index and subindex objects
+    /// </summary>
     public class ODentry
     {
         private UInt16 _index;
@@ -1066,22 +1272,39 @@ namespace libEDSsharp
         [DcfExport]
         public string denotation = "";
 
+        /// <summary>
+        /// object type var,rec, array etc.
+        /// </summary>
         [EdsExport]
         public ObjectType objecttype = ObjectType.UNKNOWN;
+        /// <summary>
+        /// data type bool, integer etc.
+        /// </summary>
         [EdsExport]
         public DataType datatype = DataType.UNKNOWN;
+        /// <summary>
+        /// access type
+        /// </summary>
         [EdsExport]
         public EDSsharp.AccessType accesstype = EDSsharp.AccessType.UNKNOWN;
-
+        /// <summary>
+        /// default value
+        /// </summary>
         [EdsExport]
         public string defaultvalue = "";
-
+        /// <summary>
+        /// low numeric limit
+        /// </summary>
         [EdsExport]
         public string LowLimit = "";
-
+        /// <summary>
+        /// high numeric limit
+        /// </summary>
         [EdsExport]
         public string HighLimit = "";
-
+        /// <summary>
+        /// actual value
+        /// </summary>
         [DcfExport]
         public string actualvalue = "";
 
@@ -1090,7 +1313,9 @@ namespace libEDSsharp
 
         [EdsExport]
         public byte CompactSubObj = 0;
-
+        /// <summary>
+        /// true if it is PDO mapping object
+        /// </summary>
         [EdsExport]
         public bool PDOMapping
         {
@@ -1492,7 +1717,8 @@ namespace libEDSsharp
         /// </summary>
         /// <param name="writer">Handle to the stream writer to write to</param>
         /// <param name="ft">File type being written</param>
-        /// 
+        /// <param name="odt">OD type to write</param>
+        /// <param name="module">module</param>
         public void Write(StreamWriter writer, InfoSection.Filetype ft, Odtype odt= Odtype.NORMAL, int module=0)
         {
 
@@ -1696,7 +1922,11 @@ namespace libEDSsharp
                 return subobjects[no];
             return null;
         }
-
+        /// <summary>
+        /// Returns default value for a subindex
+        /// </summary>
+        /// <param name="no">subindex to get the default value for</param>
+        /// <returns>default value for that subindex or "" if the subindex was not found</returns>
         public string Getsubobjectdefaultvalue(UInt16 no)
         {
             if (subobjects.ContainsKey(no))
@@ -1704,7 +1934,11 @@ namespace libEDSsharp
             else
                 return "";
         }
-
+        /// <summary>
+        /// Returns true if the object contains a subindex
+        /// </summary>
+        /// <param name="no">the subindex to look for</param>
+        /// <returns>true if it contains the subindex</returns>
         public bool Containssubindex(UInt16 no)
         {
             if (subobjects.ContainsKey(no))
@@ -1713,7 +1947,10 @@ namespace libEDSsharp
             return false;
         }
 
-
+        /// <summary>
+        /// Return max indicated subindex, or null if not array or record
+        /// </summary>
+        /// <returns></returns>
         public byte Getmaxsubindex()
         {
             //Although subindex 0 should contain the max subindex value
@@ -1759,7 +1996,9 @@ namespace libEDSsharp
                 }
             }
         }
-
+        /// <summary>
+        /// Subindex of this object if it is a subindex object, 0 if not
+        /// </summary>
         public UInt16 Subindex
         { 
             get
@@ -1772,7 +2011,11 @@ namespace libEDSsharp
 
             }
         }
-
+        /// <summary>
+        /// Look for a entry in the subindexs, return the index if found
+        /// </summary>
+        /// <param name="od">the OD entry to look for in the subindex objects</param>
+        /// <returns>the subindex if found or 0 if not found</returns>
         public UInt16 Findsubindex(ODentry od)
         {
             foreach(KeyValuePair<UInt16,ODentry>kvp in subobjects )
@@ -1849,7 +2092,9 @@ namespace libEDSsharp
         // for opened project file, but project is always saved as xdd_v1.1
         // Filename within the FileInfo structure has only limited usage.
         public string projectFilename = "";
-        // File name, when project is opened in xdd_v1.1 or project is saved
+        /// <summary>
+        /// File name, when project is opened in xdd_v1.1 or project is saved
+        /// </summary>
         public string xddfilename_1_1 = "";
         // File names for exported files
         public string xddfilenameStripped = "";
@@ -2888,7 +3133,11 @@ namespace libEDSsharp
 
             return (Convert.ToByte(defaultvalue, Getbase(defaultvalue)));
         }
-
+        /// <summary>
+        /// Convert two bytes into Uint16 (big endian)
+        /// </summary>
+        /// <param name="bytes">bytes to convert to Uint16, only the 2 first will be used</param>
+        /// <returns>value of the 2 bytes combined (big endian)</returns>
         static public UInt16 ConvertToUInt16(byte [] bytes)
         {
 
@@ -2899,7 +3148,11 @@ namespace libEDSsharp
             return value;
 
         }
-
+        /// <summary>
+        /// Try to convert a string to UInt16
+        /// </summary>
+        /// <param name="defaultvalue">string containing a number</param>
+        /// <returns>the value or 0 if unable to read it</returns>
         static public UInt16 ConvertToUInt16(string defaultvalue)
         {
             if (defaultvalue == null || defaultvalue == "" )
@@ -2907,7 +3160,11 @@ namespace libEDSsharp
 
             return (Convert.ToUInt16(defaultvalue, Getbase(defaultvalue)));
         }
-
+        /// <summary>
+        /// Try to convert a string to UInt32
+        /// </summary>
+        /// <param name="defaultvalue">string containing a number</param>
+        /// <returns>the value or 0 if unable to read it</returns>
         static public UInt32 ConvertToUInt32(string defaultvalue)
         {
             if (defaultvalue == null || defaultvalue == "" )
@@ -2915,7 +3172,11 @@ namespace libEDSsharp
 
             return (Convert.ToUInt32(defaultvalue, Getbase(defaultvalue)));
         }
-
+        /// <summary>
+        /// Return number base of a string (10 for desimal, 16 for hex and 8 for octal)
+        /// </summary>
+        /// <param name="defaultvalue">a string that will be read to try to find its base number</param>
+        /// <returns>16 if hex, 8 if octal else 10</returns>
         static public int Getbase(string defaultvalue)
         {
 
@@ -2962,7 +3223,12 @@ namespace libEDSsharp
 
         }
 
-        //Split on + , replace $NODEID with concrete value and add together
+        /// <summary>
+        /// Split on + , replace $NODEID with concrete value and add together
+        /// </summary>
+        /// <param name="input">input string containing a number maybe prefixed by $NODEID+ </param>
+        /// <param name="nodeidpresent">if $NODEID is in the string</param>
+        /// <returns></returns>
         public UInt32 GetNodeID(string input, out bool nodeidpresent)
         {
 
@@ -3015,7 +3281,12 @@ namespace libEDSsharp
             return 0;
         }
 
-
+        /// <summary>
+        /// Try to get a OD entry
+        /// </summary>
+        /// <param name="index">the index</param>
+        /// <param name="od">null if not found</param>
+        /// <returns>true if found, false if not</returns>
         public bool tryGetODEntry(UInt16 index, out ODentry od)
         {
             od = null;
@@ -3246,7 +3517,11 @@ mapped object  (subindex 1...8)
 
             return null;
         }
-
+        /// <summary>
+        /// Return the number of enabled objects
+        /// </summary>
+        /// <param name="includesub">Include subindexes in the counting</param>
+        /// <returns></returns>
         public int GetNoEnabledObjects(bool includesub=false)
         {
             int enabledcount = 0;

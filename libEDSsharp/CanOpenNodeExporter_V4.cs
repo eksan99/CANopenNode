@@ -68,7 +68,7 @@ namespace libEDSsharp
         /// <summary>
         /// Generate ODStorage, ODObjs, ODList, ODDefines and ODCnt entries
         /// </summary>
-        /// <param name="ods"></param>
+        /// <param name="eds">EDS object</param>
         private void Prepare(EDSsharp eds)
         {
             ODStorageGroups = new List<string>();
@@ -380,11 +380,10 @@ namespace libEDSsharp
         /// <summary>
         /// Export the header file
         /// </summary>
-        /// <param name="folderpath"></param>
-        /// <param name="filename"></param>
-        /// <param name="gitVersion"></param>
-        /// <param name="fi"></param>
-        /// <param name="di"></param>
+        /// <param name="folderpath">path to folder that will contain the file</param>
+        /// <param name="filename">filename</param>
+        /// <param name="gitVersion">git version that will be added to file comment</param>
+        /// <param name="eds">data that contain the data that will be exported</param>
         private void Export_h(string folderpath, string filename, string gitVersion, EDSsharp eds)
         {
 
@@ -558,9 +557,10 @@ namespace libEDSsharp
         /// <summary>
         /// Export the c file
         /// </summary>
-        /// <param name="folderpath"></param>
-        /// <param name="filename"></param>
-        /// <param name="gitVersion"></param>
+        /// <param name="folderpath">path to folder that will contain the file</param>
+        /// <param name="filename">filename</param>
+        /// <param name="gitVersion">git version that will be added to file comment</param>
+        /// <param name="eds">data that contain the data that will be exported</param>
         private void Export_c(string folderpath, string filename, string gitVersion, EDSsharp eds)
             {
 

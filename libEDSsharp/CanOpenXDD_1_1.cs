@@ -29,6 +29,10 @@ using CanOpenXSD_1_1;
 
 namespace libEDSsharp
 {
+    /// <summary>
+    /// Convert to/from EDSsharp and CanOpenXDD v1.1, it uses the generated source file CanOpenXSD_1_1
+    /// </summary>
+    /// <seealso cref="CanOpenXSD_1_1"/>
     public class CanOpenXDD_1_1
     {
         /// <summary>
@@ -1203,6 +1207,9 @@ public class CanOpenProject_1_1
 {
     [XmlElement(ElementName = "ISO15745ProfileContainer", Namespace = "http://www.canopen.org/xml/1.1")]
     public List<ISO15745ProfileContainer> ISO15745ProfileContainer { get; set; }
+    /// <summary>
+    /// XDD version
+    /// </summary>
     [XmlAttribute(AttributeName = "version")]
     public string Version { get; set; }
 }
