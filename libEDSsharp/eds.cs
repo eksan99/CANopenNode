@@ -331,7 +331,7 @@ namespace libEDSsharp
     /// <summary>
     /// Section of info in EDS or DCF file
     /// </summary>
-    public class InfoSection
+    public partial class InfoSection
     {
         protected Dictionary<string, string> section;
 
@@ -342,24 +342,6 @@ namespace libEDSsharp
         {
             File_EDS,
             File_DCF
-        }
-
-        public virtual void Parse(Dictionary<string, string> section,string sectionname)
-        {
-
-            this.section = section;
-
-            FieldInfo[] fields = this.GetType().GetFields();
-
-            foreach (FieldInfo f in fields)
-            {
-                if(Attribute.IsDefined(f, typeof(EdsExport)))
-                    GetField(f.Name, f.Name);
-
-                if (Attribute.IsDefined(f, typeof(DcfExport)))
-                    GetField(f.Name, f.Name);
-            }
-
         }
 
         public bool GetField(string name, string varname)
@@ -450,51 +432,10 @@ namespace libEDSsharp
 
             return msg;
         }
-        /// <summary>
-        /// Write object to stream
-        /// </summary>
-        /// <param name="writer">stream to write the data to</param>
-        /// <param name="ft">file type</param>
-        public void Write(StreamWriter writer, Filetype ft)
-        {
-            writer.WriteLine("[" + edssection + "]");
-            Type tx = this.GetType();
-            FieldInfo[] fields = this.GetType().GetFields();
-
-            foreach (FieldInfo f in fields)
-            {
-
-                if ((ft==Filetype.File_EDS) && (!Attribute.IsDefined(f, typeof(EdsExport))))
-                    continue;
-
-                if ((ft == Filetype.File_DCF) && (!(Attribute.IsDefined(f, typeof(DcfExport)) || Attribute.IsDefined(f, typeof(EdsExport)))))
-                    continue;
-
-                if (f.GetValue(this) == null)
-                    continue;
-
-                EdsExport ex = (EdsExport)f.GetCustomAttribute(typeof(EdsExport));
-
-                bool comment = ex.IsReadOnly();
-
-                if (f.FieldType.Name == "Boolean")
-                {
-                    writer.WriteLine(string.Format("{2}{0}={1}", f.Name, ((bool)f.GetValue(this)) == true ? 1 : 0,comment==true?";":""));
-                }
-                else
-                {
-                    writer.WriteLine(string.Format("{2}{0}={1}", f.Name, f.GetValue(this).ToString(), comment == true ? ";" : ""));
-                }
-            }
-
-            writer.WriteLine("");
-
-        }
-       
     }
 
  
-    public class MandatoryObjects : SupportedObjects
+    public partial class MandatoryObjects : SupportedObjects
     {
         public MandatoryObjects()
             : base()
@@ -502,27 +443,15 @@ namespace libEDSsharp
               infoheader = "Mandatory Objects";
               edssection = "MandatoryObjects";
          }
-
-         public MandatoryObjects(Dictionary<string, string> section)
-             : this()
-         {
-             Parse(section);
-         }
     }
 
-    public class OptionalObjects : SupportedObjects
+    public partial class OptionalObjects : SupportedObjects
     {
         public OptionalObjects()
             : base()
         {
             infoheader = "Optional Objects";
             edssection = "OptionalObjects";
-        }
-
-        public OptionalObjects(Dictionary<string, string> section)
-            : this()
-        {
-            Parse(section);
         }
     }
 
