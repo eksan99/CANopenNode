@@ -455,37 +455,25 @@ namespace libEDSsharp
         }
     }
 
-    public class ManufacturerObjects : SupportedObjects
+    public partial class ManufacturerObjects : SupportedObjects
     {
         public ManufacturerObjects() : base()
         {
             infoheader = "Manufacturer Objects";
             edssection = "ManufacturerObjects";
         }
-
-        public ManufacturerObjects(Dictionary<string, string> section)
-            : this()
-        {
-            Parse(section);
-        }
     }
 
-    public class TypeDefinitions : SupportedObjects
+    public partial class TypeDefinitions : SupportedObjects
     {   
         public TypeDefinitions() : base()
         {
             infoheader = "Type Definitions";
             edssection = "TypeDefinitions";
         }
-
-        public TypeDefinitions(Dictionary<string, string> section)
-        {
-            Parse(section);
-        }
-
     }
 
-    public class SupportedObjects
+    public partial class SupportedObjects
     {
 
         public Dictionary<int, int> objectlist;
@@ -496,23 +484,6 @@ namespace libEDSsharp
         public SupportedObjects()
         {
             objectlist = new Dictionary<int, int>();
-        }
-
-        public virtual void Parse(Dictionary<string, string> section)
-        {
-            objectlist = new Dictionary<int, int>();
-            foreach(KeyValuePair<string,string> kvp in section)
-            {
-                if(kvp.Key.ToLower()=="supportedobjects")
-                    continue;
-
-                if (kvp.Key.ToLower() == "nrofentries")
-                    continue;
-
-                int count = Convert.ToInt16(kvp.Key, EDSsharp.Getbase(kvp.Key));
-                int target = Convert.ToInt16(kvp.Value, EDSsharp.Getbase(kvp.Value));
-                objectlist.Add(count, target);
-            }
         }
         /// <summary>
         /// Returns a string that represents the current object.
@@ -534,25 +505,9 @@ namespace libEDSsharp
             return msg;
 
         }
-        /// <summary>
-        /// Write object to stream
-        /// </summary>
-        /// <param name="writer">stream to write the data to</param>
-        public void Write(StreamWriter writer)
-        {
-            writer.WriteLine("[" + edssection + "]");
-            writer.WriteLine(string.Format("{0}={1}", countmsg,objectlist.Count));
-            foreach (KeyValuePair<int, int> kvp in objectlist)
-            {
-                writer.WriteLine(string.Format("{0}=0x{1:X4}", kvp.Key, kvp.Value));
-            }
-
-            writer.WriteLine("");
-        }
-
     }
 
-    public class Comments
+    public partial class Comments
     {
 
         public List<string> comments = new List<string>();
@@ -564,23 +519,6 @@ namespace libEDSsharp
            
         }
 
-        public Comments(Dictionary<string, string> section) 
-        {
-            Parse(section);
-        }
-
-        public virtual void Parse(Dictionary<string, string> section)
-        {
-            comments = new List<string>();
-            foreach (KeyValuePair<string, string> kvp in section)
-            {
-                if (kvp.Key == "Lines")
-                    continue;
-
-                comments.Add(kvp.Value);
-
-            }
-        }
         /// <summary>
         /// Returns a string that represents the current object.
         /// </summary>
@@ -601,34 +539,10 @@ namespace libEDSsharp
             return msg;
 
         }
-        /// <summary>
-        /// Write object to stream
-        /// </summary>
-        /// <param name="writer">stream to write the data to</param>
-        public void Write(StreamWriter writer)
-        {
-            if(comments == null)
-            {
-                comments = new List<string>();
-            }
-
-            writer.WriteLine("[" + edssection + "]");
-
-            writer.WriteLine(string.Format("Lines={0}", comments.Count));
-
-            int count = 1;
-            foreach (string s in comments)
-            {
-                writer.WriteLine(string.Format("Line{0}={1}", count, s));
-                count++;
-            }
-
-            writer.WriteLine("");
-        }   
     }
 
 
-    public class Dummyusage : InfoSection
+    public partial class Dummyusage : InfoSection
     {
         [EdsExport]
         public bool Dummy0001;
@@ -651,17 +565,12 @@ namespace libEDSsharp
              infoheader = "CAN OPEN Dummy Usage";
              edssection = "DummyUsage";
         }
-
-        public Dummyusage(Dictionary<string, string> section) : this()
-        {
-            Parse(section,edssection);
-        }
     }
 
     /// <summary>
     /// FileInfo section as described in CiA 306
     /// </summary>
-    public class FileInfo : InfoSection
+    public partial class FileInfo : InfoSection
     {
         // Only for internal usage, use Path.GetFileName(eds.projectFilename) instead.
         /// <summary>
@@ -734,82 +643,17 @@ namespace libEDSsharp
         //Folder CO_OD.c and CO_OD.h will be exported into
         public string exportFolder = "";
 
-
-        public FileInfo(Dictionary<string, string> section) : this()
-        {
-            Parse(section,edssection);
-        }
-
         public FileInfo()
         {
             infoheader = "CAN OPEN FileInfo";
             edssection = "FileInfo";
-        }
-
-
-        override public void Parse(Dictionary<string, string> section, string sectionname)
-        {
-
-            base.Parse(section,edssection);
-
-            string dtcombined = "";
-            try
-            {
-                if (section.ContainsKey("CreationTime") && section.ContainsKey("CreationDate"))
-                {
-                    dtcombined = section["CreationTime"].Replace(" ","") + " " + section["CreationDate"];
-                    CreationDateTime = DateTime.ParseExact(dtcombined, "h:mmtt MM-dd-yyyy", CultureInfo.InvariantCulture);
-                }
-            }
-            catch(Exception e)
-            {
-                if (e is System.FormatException)
-                {
-                    Warnings.warning_list.Add(String.Format("EDS Error: Section [{1}] Unable to parse DateTime {0} for CreationTime, not in DS306 format", dtcombined,sectionname));
-                }
-            }
-
-            try
-            {
-                if (section.ContainsKey("ModificationTime") && section.ContainsKey("ModificationTime"))
-                {
-                    dtcombined = section["ModificationTime"].Replace(" ", "") + " " + section["ModificationDate"];
-                    ModificationDateTime = DateTime.ParseExact(dtcombined, "h:mmtt MM-dd-yyyy", CultureInfo.InvariantCulture);
-                }
-            }
-            catch (Exception e)
-            {
-                if (e is System.FormatException)
-                {
-                    Warnings.warning_list.Add(String.Format("EDS Error: Section [{1}] Unable to parse DateTime {0} for ModificationTime, not in DS306 format", dtcombined, sectionname));
-                }
-            }
-
-
-            try
-            {
-                if (section.ContainsKey("EDSVersion"))
-                {
-                    string[] bits = section["EDSVersion"].Split('.');
-                    if (bits.Length >= 1)
-                        EDSVersionMajor = Convert.ToByte(bits[0]);
-                    if (bits.Length >= 2)
-                        EDSVersionMinor = Convert.ToByte(bits[1]);
-                    //EDSVersion = String.Format("{0}.{1}", EDSVersionMajor, EDSVersionMinor);
-                }
-            }
-            catch
-            {
-                Warnings.warning_list.Add(String.Format("Unable to parse EDS version {0}", section["EDSVersion"]));
-            }
-
         }
     }
 
     /// <summary>
     /// DeviceInfo section as described in CiA 306
     /// </summary>
-    public class DeviceInfo : InfoSection
+    public partial class DeviceInfo : InfoSection
     {
         /// <summary>
         /// vendor name (max. 244 characters)
@@ -939,26 +783,16 @@ namespace libEDSsharp
             infoheader = "CAN OPEN DeviceInfo";
             edssection = "DeviceInfo";
         }
-
-        public DeviceInfo(Dictionary<string, string> section) : this()
-        {
-            Parse(section,edssection);
-        }
     }
 
 
-    public class DeviceCommissioning : InfoSection
+    public partial class DeviceCommissioning : InfoSection
     {
 
         public DeviceCommissioning()
         {
             infoheader = "CAN OPEN DeviceCommissioning";
             edssection = "DeviceComissioning";  
-        }
-
-        public DeviceCommissioning(Dictionary<string, string> section) : this()
-        {
-            Parse(section,edssection);
         }
 
         [DcfExport]
@@ -984,7 +818,7 @@ namespace libEDSsharp
 
     }
 
-    public class SupportedModules : InfoSection
+    public partial class SupportedModules : InfoSection
     {
         [EdsExport]
         public UInt16 NrOfEntries;
@@ -994,16 +828,9 @@ namespace libEDSsharp
             infoheader = "CAN OPEN Supported Modules";
             edssection = "SupportedModules";
         }
-
-        public SupportedModules(Dictionary<string, string> section) : this()
-        {
-            Parse(section,edssection);
-        }
-
-       
     }
 
-    public class ConnectedModules : SupportedObjects
+    public partial class ConnectedModules : SupportedObjects
     {
         [EdsExport]
         public UInt16 NrOfEntries
@@ -1020,29 +847,9 @@ namespace libEDSsharp
             countmsg = "NrOfEntries";
             connectedmodulelist = new Dictionary<int, int>();
         }
-
-        public ConnectedModules(Dictionary<string, string> section) : this()
-        {
-            Parse(section);
-
-            
-            foreach(KeyValuePair<int,int> kvp in this.objectlist)
-            {
-
-
-                UInt16 K = (UInt16)kvp.Value;
-                UInt16 V = (UInt16)kvp.Key;
-
-                connectedmodulelist.Add(K, V);
-
-
-            }
-
-        }
-     
     }
 
-    public class MxFixedObjects : SupportedObjects
+    public partial class MxFixedObjects : SupportedObjects
     {
         [EdsExport]
         public UInt16 NrOfEntries
@@ -1067,22 +874,9 @@ namespace libEDSsharp
             countmsg = "NrOfEntries";
             connectedmodulelist = new Dictionary<int, int>();
         }
-
-        public MxFixedObjects(Dictionary<string, string> section, UInt16 modindex) : this(modindex)
-        {
-            Parse(section);
-
-            foreach (KeyValuePair<int, int> kvp in this.objectlist)
-            {
-                connectedmodulelist.Add((UInt16)kvp.Value, (UInt16)kvp.Key);
-            }
-        }
-
     }
 
-
-
-    public class ModuleInfo : InfoSection
+    public partial class ModuleInfo : InfoSection
     {
         [EdsExport(maxlength = 248)]
         public string ProductName;
@@ -1104,15 +898,9 @@ namespace libEDSsharp
             infoheader = "CAN OPEN Module Info " + moduleindex.ToString();
             edssection = string.Format("M{0}{1}", moduleindex, "ModuleInfo");
         }
-
-        public ModuleInfo(Dictionary<string, string> section, UInt16 moduleindex) : this (moduleindex)
-        {
-            Parse(section,edssection);
-        }
     }
 
-
-    public class ModuleComments : Comments
+    public partial class ModuleComments : Comments
     {
 
         UInt16 moduleindex;
@@ -1123,16 +911,9 @@ namespace libEDSsharp
             infoheader = "CAN OPEN Module Comments " + moduleindex.ToString();
             edssection = string.Format("M{0}{1}", moduleindex, "Comments");
         }
-
-        public ModuleComments(Dictionary<string, string> section,UInt16 moduleindex) : this (moduleindex)
-        {
-            Parse(section);
-        }
-
-
     }
 
-    public class ModuleSubExtends : SupportedObjects
+    public partial class ModuleSubExtends : SupportedObjects
     {
 
         UInt16 moduleindex;
@@ -1144,18 +925,11 @@ namespace libEDSsharp
             infoheader = "CAN OPEN ModuleSubExtends "+moduleindex.ToString();
             edssection = string.Format("M{0}{1}", moduleindex, "SubExtends");
         }
-
-        public ModuleSubExtends(Dictionary<string, string> section, UInt16 moduleindex)
-              : this(moduleindex)
-        {
-            Parse(section);
-        }
-
     }
     /// <summary>
     /// Represent object dictionary index and subindex objects
     /// </summary>
-    public class ODentry
+    public partial class ODentry
     {
         private UInt16 _index;
 
@@ -1641,112 +1415,6 @@ namespace libEDSsharp
         }
 
         /// <summary>
-        /// Write out this Object dictionary entry to an EDS/DCF file using correct formatting
-        /// </summary>
-        /// <param name="writer">Handle to the stream writer to write to</param>
-        /// <param name="ft">File type being written</param>
-        /// <param name="odt">OD type to write</param>
-        /// <param name="module">module</param>
-        public void Write(StreamWriter writer, InfoSection.Filetype ft, Odtype odt= Odtype.NORMAL, int module=0)
-        {
-
-            string fixedmodheader = "";
-
-            if (odt == Odtype.FIXED)
-            {
-                fixedmodheader = string.Format("M{0}Fixed", module);
-            }
-
-            if(odt == Odtype.SUBEXT)
-            {
-                fixedmodheader = string.Format("M{0}SubExt", module);
-            }
-
-            if (parent != null)
-            {
-                writer.WriteLine(string.Format("[{0}{1:X}sub{2:X}]", fixedmodheader,Index, Subindex));
-            }
-            else
-            {
-                writer.WriteLine(string.Format("[{0}{1:X}]",fixedmodheader,Index));
-            }
-
-            writer.WriteLine(string.Format("ParameterName={0}", parameter_name));
-
-            if(ft == InfoSection.Filetype.File_DCF)
-            {
-                writer.WriteLine(string.Format("Denotation={0}", denotation));
-            }
-
-            writer.WriteLine(string.Format("ObjectType=0x{0:X}", (int)objecttype));
-            writer.WriteLine(string.Format(";StorageLocation={0}", prop.CO_storageGroup));
-
-            if (objecttype == ObjectType.ARRAY)
-            {
-                writer.WriteLine(string.Format("SubNumber=0x{0:X}", Nosubindexes));
-            }
-
-            if (objecttype == ObjectType.RECORD)
-            {
-                writer.WriteLine(string.Format("SubNumber=0x{0:X}", Nosubindexes));
-            }
-
-            if (objecttype == ObjectType.VAR)
-            {
-                DataType dt = datatype;
-                if (dt == DataType.UNKNOWN && this.parent != null)
-                    dt = parent.datatype;
-                    writer.WriteLine(string.Format("DataType=0x{0:X4}", (int)dt));
-                writer.WriteLine(string.Format("AccessType={0}", accesstype.ToString()));
-
-
-                if(HighLimit != null && HighLimit != "")
-                {
-                    writer.WriteLine(string.Format("HighLimit={0}", Formatoctetstring(HighLimit)));
-                }
-
-                if (LowLimit != null && LowLimit != "")
-                {
-                    writer.WriteLine(string.Format("LowLimit={0}", Formatoctetstring(LowLimit)));
-                }
-    
-                writer.WriteLine(string.Format("DefaultValue={0}", Formatoctetstring(defaultvalue)));
-
-                //TODO If the ObjectType is domain (0x2) the value of the object may be stored in a file,UploadFile and DownloadFile
-                if (ft == InfoSection.Filetype.File_DCF)
-                {
-                    writer.WriteLine(string.Format("ParameterValue={0}", Formatoctetstring(actualvalue)));
-                }
-
-                writer.WriteLine(string.Format("PDOMapping={0}", PDOMapping==true?1:0));
-
-                if (prop.CO_flagsPDO == true)
-                {
-                    writer.WriteLine(";TPDODetectCos=1");
-                }
-
-
-            }
-
-            //Count is for modules in the [MxSubExtxxxx]
-            //Should we export this on EDS only, or DCF or both?
-            if (odt == Odtype.SUBEXT )
-            {
-                    writer.WriteLine(string.Format("Count={0}", count));
-                    writer.WriteLine(string.Format("ObjExtend={0}", ObjExtend));
-            }
-
-            //ObjectFlags is always optional (Page 15, DSP306) and used for DCF writing to nodes
-            //also recommended not to write if it is already 0
-            if (ObjFlags != 0)
-            {
-                writer.WriteLine(string.Format("ObjFlags={0}", ObjFlags));
-            }
-
-            writer.WriteLine("");
-        }
-
-        /// <summary>
         /// Returns a c compatible string that represents the name of the object, - is replaced with _
         /// words separated by a space are replaced with _ for a separator eg ONE TWO becomes ONE_TWO
         /// </summary>
@@ -1998,7 +1666,7 @@ namespace libEDSsharp
 
     }
 
-    public class EDSsharp
+    public partial class EDSsharp
     {
 
         public enum AccessType
@@ -2210,558 +1878,6 @@ namespace libEDSsharp
             return mappingErrors;
         }
 
-        public void Parseline(string linex,int no)
-        {
-
-            string key = "";
-            string value = "";
-
-            string line = linex.TrimStart(';');
-            bool custom_extension = false;
-
-            if (linex == null || linex == "")
-                return;
-
-            if (linex[0] == ';')
-                custom_extension = true;
-
-
-            //extract sections
-            {
-                string pat = @"^\[([a-z0-9]+)\]";
-
-                Regex r = new Regex(pat, RegexOptions.IgnoreCase);
-                Match m = r.Match(line);
-                if (m.Success)
-                {
-                    Group g = m.Groups[1];
-                    sectionname = g.ToString();
-
-                    if (!eds.ContainsKey(sectionname))
-                    {
-                        eds.Add(sectionname, new Dictionary<string, string>());
-                    }
-                    else
-                    {
-                        Warnings.warning_list.Add(string.Format("EDS Error on Line {0} : Duplicate section [{1}] ", no,sectionname));
-                    }
-                }
-            }
-
-            //extract keyvalues
-            {
-                //Bug #70 Eat whitespace!
-                string pat = @"^([a-z0-9_]+)[ ]*=[ ]*(.*)";
-
-                Regex r = new Regex(pat, RegexOptions.IgnoreCase);
-                Match m = r.Match(line);
-                if (m.Success)
-                {
-                    key = m.Groups[1].ToString();
-                    value = m.Groups[2].ToString();
-                    value = value.TrimEnd(' ','\t','\n','\r');
-
-                    //not sure how we actually get here with out a section being in the dictionary already..
-                    //suspect this is dead code.
-                    if (!eds.ContainsKey(sectionname))
-                    {
-                        eds.Add(sectionname, new Dictionary<string, string>());
-                    }
-            
-                    if (custom_extension == false)
-                    {
-                        try
-                        {
-                            eds[sectionname].Add(key, value);
-                        }
-                        catch(Exception)
-                        {
-                            Warnings.warning_list.Add(string.Format("EDS Error on Line {3} : Duplicate key \"{0}\" value \"{1}\" in section [{2}]", key,value,sectionname, no));
-                        }
-                    }
-                    else
-                    //Only allow our own extensions to populate the key/value pair
-                    {
-                        if (key == "StorageLocation" || key== "TPDODetectCos")
-                        {
-                            try
-                            {
-                                eds[sectionname].Add(key, value);
-                            }
-                            catch(Exception)
-                            {
-                                Warnings.warning_list.Add(string.Format("EDS Error on Line {3} : Duplicate custom key \"{0}\" value \"{1}\" in section [{2}]", key, value, sectionname, no));
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        public void ParseEDSentry(KeyValuePair<string, Dictionary<string, string>> kvp)
-        {
-            string section = kvp.Key;
-
-            string pat = @"^(M[0-9a-fA-F]+(Fixed|SubExt))?([a-fA-F0-9]+)(sub)?([0-9a-fA-F]*)$";
-
-            Regex r = new Regex(pat);
-            Match m = r.Match(section);
-            if (m.Success)
-            {
-
-                SortedDictionary<UInt16, ODentry>  target = this.ods;
-
-                //** MODULE DCF SUPPORT
-
-                string pat2 = @"^M([0-9a-fA-F]+)(Fixed|SubExt)([0-9a-fA-F]+)";
-                Regex r2 = new Regex(pat2, RegexOptions.IgnoreCase);
-                Match m2 = r2.Match(m.Groups[0].ToString());
-
-                if (m2.Success)
-                {
-                    UInt16 modindex=0, odindex=0;
-
-                    try {  modindex = Convert.ToUInt16(m2.Groups[1].Value); }
-                    catch (Exception) { Console.WriteLine("** ALL GONE WRONG **" + m2.Groups[1].Value); }
-                    //Indexes in the EDS are always in hex format without the pre 0x
-                    try {  odindex = Convert.ToUInt16(m2.Groups[3].Value, 16); }
-                    catch (Exception) { Console.WriteLine("** ALL GONE WRONG **" + m2.Groups[3].Value); }
-
-
-                    if (!modules.ContainsKey(modindex))
-                        modules.Add(modindex, new Module(modindex));
-
-                    if (m2.Groups[2].ToString() == "SubExt")
-                    {      
-                        target = modules[modindex].modulesubext;
-                          
-                    }
-                    else
-                    {
-                        target = modules[modindex].modulefixedobjects;
-                    }
-                }
-
-
-                ODentry od = new ODentry
-                {
-                    //Indexes in the EDS are always in hex format without the pre 0x
-                    Index = Convert.ToUInt16(m.Groups[3].ToString(), 16)
-                };
-
-                //Parameter name, mandatory always
-                if (!kvp.Value.ContainsKey("ParameterName"))
-                    throw new ParameterException("Missing required field ParameterName on" + section);
-                od.parameter_name = kvp.Value["ParameterName"];
-
-                //Object type, assumed to be VAR unless specified
-                if (kvp.Value.ContainsKey("ObjectType"))
-                {
-                    int type = Convert.ToInt16(kvp.Value["ObjectType"], Getbase(kvp.Value["ObjectType"]));
-                    od.objecttype = (ObjectType)type;
-                }
-                else
-                {
-                    od.objecttype = ObjectType.VAR;
-                }
-
-                if(kvp.Value.ContainsKey("CompactSubObj"))
-                {
-                    od.CompactSubObj = Convert.ToByte(kvp.Value["CompactSubObj"],Getbase(kvp.Value["CompactSubObj"]));
-                }
-
-                if(kvp.Value.ContainsKey("ObjFlags"))
-                {
-                    od.ObjFlags = Convert.ToUInt32(kvp.Value["ObjFlags"], Getbase(kvp.Value["ObjFlags"]));
-                }
-                else
-                {
-                    od.ObjFlags = 0;
-                }
-
-                //Access Type
-                if(kvp.Value.ContainsKey("StorageLocation"))
-                {
-                    od.prop.CO_storageGroup = kvp.Value["StorageLocation"];
-                }
-
-                if (kvp.Value.ContainsKey("TPDODetectCos"))
-                {
-                    string test = kvp.Value["TPDODetectCos"].ToLower();
-                    if (test == "1" || test == "true")
-                    {
-                        od.prop.CO_flagsPDO = true;
-                    }
-                    else
-                        od.prop.CO_flagsPDO = false;
-                }
-
-                if (kvp.Value.ContainsKey("Count"))
-                {
-                    /*  FIXME: The format of  "Count" is Unsigned8[; Unsigned8] according DS306
-                     *  Count:
-                        Number of extended Sub-Indexes with this description that are created per module. The format is Unsigned8 [; Unsigned8].
-                        If one or more Sub - Indexes are created per attached module to build a new sub- index, then Count is that                        Number. In example 32 bit module creates 4 Sub - Indexes each having 8 Bit: Count = 4
-                        If several modules are gathered to form a new Sub- Index, then the number is 0, followed by semicolon and the                        number of bits that are created per module to build a new Sub-Index.In example 2 bit modules with 8 bit objects: The                        first Sub - Index is built upon modules 1 - 4, the next upon modules 5 - 8 etc.: Count = 0; 2.The objects are created,                        when a new byte begins: Module 1 creates the Sub - Index 1; modules 2 - 4 fill it up; module 5 creates Sub-Index 2 and                        so forth.
-                    */
-                    pat2 = @"\s*([0-9a-fA-F]+)\s*;\s*([0-9a-fA-F]+)";
-                    r2 = new Regex(pat2, RegexOptions.IgnoreCase);
-                    m2 = r2.Match(kvp.Value["Count"]);
-
-
-
-                    if (m2.Success)
-                    {
-                        Console.WriteLine("** FIXME Count format not supported ** Count: " + kvp.Value["Count"]);
-                        int found = kvp.Value["Count"].IndexOf(";");
-                        string s = kvp.Value["Count"].Substring(found + 1);
-                        try { od.count = Convert.ToByte(s, Getbase(s)); }
-                        catch (Exception) { Console.WriteLine("** ALL GONE WRONG ** Count" + kvp.Value["Count"]); }
-                    }
-                    else
-                    {
-
-                        try { od.count = Convert.ToByte(kvp.Value["Count"], Getbase(kvp.Value["Count"])); }
-                        catch (Exception) { Console.WriteLine("** ALL GONE WRONG ** Count" + kvp.Value["Count"]); }
-                    }
-                    
-                }
-
-                if (kvp.Value.ContainsKey("ObjExtend"))
-                {
-                    try { od.ObjExtend = Convert.ToByte(kvp.Value["ObjExtend"]); }
-                    catch (Exception) { Console.WriteLine("** ALL GONE WRONG ** ObjExtend:" + kvp.Value["ObjExtend"]); }
-                    
-                }
-
-
-                if (od.objecttype == ObjectType.VAR)
-                {
-
-                    if (kvp.Value.ContainsKey("CompactSubObj"))
-                        throw new ParameterException("CompactSubObj not valid for a VAR Object, section: " + section);
-
-                    if (kvp.Value.ContainsKey("ParameterValue"))
-                    {
-
-                        try { od.actualvalue = kvp.Value["ParameterValue"]; }
-                        catch (Exception) { Console.WriteLine("** ALL GONE WRONG ** ParameterValue:" + kvp.Value["ParameterValue"]); }
-                    }
-
-                    if (kvp.Value.ContainsKey("HighLimit"))
-                    {
-                        try { od.HighLimit = kvp.Value["HighLimit"]; }
-                        catch (Exception) { Console.WriteLine("** ALL GONE WRONG ** HighLimit:" + kvp.Value["HighLimit"]); }
-                    }
-
-                    if (kvp.Value.ContainsKey("LowLimit"))
-                    {
-                        try { od.LowLimit = kvp.Value["LowLimit"]; }
-                        catch (Exception) { Console.WriteLine("** ALL GONE WRONG ** LowLimit:" + kvp.Value["LowLimit"]); }
-                    }
-
-                    if (kvp.Value.ContainsKey("Denotation"))
-                    {
-                        try { od.denotation = kvp.Value["Denotation"]; }
-                        catch (Exception) { Console.WriteLine("** ALL GONE WRONG ** Denotation:" + kvp.Value["Denotation"]); }
-
-                        
-                    }
-
-                    if (m.Groups[5].Length != 0)
-                    {
-                        //FIXME are subindexes in hex always?
-                        UInt16 subindex = Convert.ToUInt16(m.Groups[5].ToString(),16);
-                        od.parent = target[od.Index];
-                        target[od.Index].subobjects.Add(subindex, od);
-                    }
-
-                    if (!kvp.Value.ContainsKey("DataType"))
-                            throw new ParameterException("Missing required field DataType on" + section);
-                        od.datatype = (DataType)Convert.ToInt16(kvp.Value["DataType"], Getbase(kvp.Value["DataType"]));
-                    
-                    if (!kvp.Value.ContainsKey("AccessType"))
-                        throw new ParameterException("Missing required AccessType on" + section);
-
-                    string accesstype = kvp.Value["AccessType"].ToLower();
-
-                    if (Enum.IsDefined(typeof(AccessType), accesstype))
-                    {
-                        od.accesstype = (AccessType)Enum.Parse(typeof(AccessType), accesstype);
-                    }
-                    else
-                    {
-                        throw new ParameterException("Unknown AccessType on" + section);
-                    }
-
-                    if (kvp.Value.ContainsKey("DefaultValue"))
-                        od.defaultvalue = kvp.Value["DefaultValue"];
-
-                    od.PDOtype = PDOMappingType.no;
-                    if (kvp.Value.ContainsKey("PDOMapping"))
-                    {
-                        
-                        bool pdo = Convert.ToInt16(kvp.Value["PDOMapping"],Getbase(kvp.Value["PDOMapping"])) == 1;
-                        if (pdo == true)
-                            od.PDOtype = PDOMappingType.optional;
-                    }
-
-                }
-
-              
-                if(od.objecttype == ObjectType.RECORD|| od.objecttype == ObjectType.ARRAY || od.objecttype == ObjectType.DEFSTRUCT)
-                {
-
-                    if (od.CompactSubObj != 0)
-                    {
-                        if (!kvp.Value.ContainsKey("DataType"))
-                            throw new ParameterException("Missing required field DataType on" + section);
-                        od.datatype = (DataType)Convert.ToInt16(kvp.Value["DataType"], Getbase(kvp.Value["DataType"]));
-
-                        if (!kvp.Value.ContainsKey("AccessType"))
-                            throw new ParameterException("Missing required AccessType on" + section);
-                        string accesstype = kvp.Value["AccessType"];
-                        if (Enum.IsDefined(typeof(AccessType), accesstype))
-                        {
-                            od.accesstype = (AccessType)Enum.Parse(typeof(AccessType), accesstype);
-                        }
-                        else
-                        {
-                            throw new ParameterException("Unknown AccessType on" + section);
-                        }
-
-                        //now we generate CompactSubObj number of var objects below this parent
-
-                        if(od.CompactSubObj>=0xfe)
-                        {
-                            od.CompactSubObj = 0xfe;
-                        }
-
-                        ODentry subi = new ODentry("NrOfObjects", od.Index, DataType.UNSIGNED8, String.Format("0x{0:x2}",od.CompactSubObj), AccessType.ro, PDOMappingType.no, od);      
-                        od.subobjects.Add(0x00, subi);
-
-                        for (int x=1; x<= od.CompactSubObj; x++)
-                        {
-                            string parameter_name = string.Format("{0}{1:x2}", od.parameter_name, x );
-                            ODentry sub = new ODentry(parameter_name, od.Index, od.datatype, od.defaultvalue, od.accesstype, od.PDOtype, od);
-
-                            if (kvp.Value.ContainsKey("HighLimit"))
-                                sub.HighLimit = kvp.Value["HighLimit"];
-
-                            if (kvp.Value.ContainsKey("LowLimit"))
-                                sub.HighLimit = kvp.Value["LowLimit"];
-
-                            od.subobjects.Add((ushort)(x ), sub);
-                        }
-
-                    }
-                    else
-                    {
-                        if (!kvp.Value.ContainsKey("SubNumber"))
-                            throw new ParameterException("Missing SubNumber on Array for" + section);
-
-
-
-                    }
-                }
-
-                if(od.objecttype == ObjectType.DOMAIN)
-                {
-                    od.datatype = DataType.DOMAIN;
-                    od.accesstype = AccessType.rw;
-
-                    if (kvp.Value.ContainsKey("DefaultValue"))
-                        od.defaultvalue = kvp.Value["DefaultValue"];
-
-                }
-
-                //Only add top level to this list
-                if (m.Groups[5].Length == 0)
-                {
-                    target.Add(od.Index, od);
-                }
-            }
-
-        }
-
-        public void Loadfile(string filename)
-        {
-
-            projectFilename = filename;
-
-            if (Path.GetExtension(filename).ToLower() == ".eds")
-            {
-                edsfilename = filename;
-            }
-
-            if (Path.GetExtension(filename).ToLower() == ".dcf")
-            {
-                dcffilename = filename;
-            }
-
-            //try
-            {
-                int lineno = 1;
-                foreach (string linex in System.IO.File.ReadLines(filename))
-                {
-                    Parseline(linex,lineno);
-                    lineno++;
-                }
-
-                di = new DeviceInfo(eds["DeviceInfo"]);
-
-                foreach (KeyValuePair<string, Dictionary<string, string>> kvp in eds)
-                {
-
-                    try { ParseEDSentry(kvp); }
-                    catch (Exception) { Console.WriteLine("** ALL GONE WRONG **" + kvp); }
-                    
-                }
-
-                fi = new FileInfo(eds["FileInfo"]);
-                if(eds.ContainsKey("DummyUsage"))
-                    du = new Dummyusage(eds["DummyUsage"]);
-
-                md = new MandatoryObjects(eds["MandatoryObjects"]);
-
-                if(eds.ContainsKey("OptionalObjects"))
-                    oo = new OptionalObjects(eds["OptionalObjects"]);
-
-                if(eds.ContainsKey("ManufacturerObjects"))
-                    mo = new ManufacturerObjects(eds["ManufacturerObjects"]);
-
-                if (eds.ContainsKey("TypeDefinitions"))
-                    td = new TypeDefinitions(eds["TypeDefinitions"]);
-
-                //Only DCF not EDS files
-                dc = new DeviceCommissioning();
-                string strSection = "";
-                if (eds.ContainsKey("DeviceCommissioning"))     // wrong section name as defined in the DSP302, but right spelling (for compabiltiy to some tools)
-                    strSection = "DeviceCommissioning";
-                else if (eds.ContainsKey("DeviceComissioning")) // right section name as defined in the DSP302, (wrong spelling)
-                    strSection = "DeviceComissioning";
-
-                if (strSection != ""){
-                    dc.Parse(eds[strSection],"DeviceCommissioning");
-                    edsfilename = fi.LastEDS;
-                }
-                
-                c = new Comments();
-
-                if (eds.ContainsKey("Comments"))
-                    c.Parse(eds["Comments"]);
-
-                //Modules
-
-                //FIXME
-                //we don't parse or support [MxFixedObjects] with MxFixedxxxx and MxFixedxxxxsubx
-
-                if (eds.ContainsKey("SupportedModules"))
-                {
-                    sm = new SupportedModules(eds["SupportedModules"]);
-
-                    //find MxModuleInfo
-
-                    foreach (string s in eds.Keys)
-                    {
-                        String pat = @"M([0-9]+)ModuleInfo";
-                        Regex r = new Regex(pat, RegexOptions.IgnoreCase);
-                        Match m = r.Match(s);
-
-                        if (m.Success)
-                        {
-                            UInt16 modindex = Convert.ToUInt16(m.Groups[1].Value);
-                            ModuleInfo mi = new ModuleInfo(eds[s], modindex);
-
-                            if (!modules.ContainsKey(modindex))
-                                modules.Add(modindex, new Module(modindex));
-
-                            modules[modindex].mi = mi;
-
-                        }
-
-
-                        pat = @"M([0-9]+)Comments";
-                        r = new Regex(pat, RegexOptions.IgnoreCase);
-                        m = r.Match(s);
-
-                        if (m.Success)
-                        {
-                            UInt16 modindex = Convert.ToUInt16(m.Groups[1].Value);
-                            ModuleComments mc = new ModuleComments(eds[s], modindex);
-
-                            if (!modules.ContainsKey(modindex))
-                                modules.Add(modindex, new Module(modindex));
-
-                            modules[modindex].mc = mc;
-
-                        }
-                        pat = @"M([0-9]+)SubExtends";
-                        r = new Regex(pat, RegexOptions.IgnoreCase);
-                        m = r.Match(s);
-
-                        if (m.Success)
-                        {
-                            UInt16 modindex = Convert.ToUInt16(m.Groups[1].Value);
-                            ModuleSubExtends mse = new ModuleSubExtends(eds[s], modindex);
-
-                            if (!modules.ContainsKey(modindex))
-                                modules.Add(modindex, new Module(modindex));
-
-                            modules[modindex].mse = mse;
-                        }
-
-
-                        //DCF only
-
-                        pat = @"M([0-9]+)FixedObjects";
-                        r = new Regex(pat, RegexOptions.IgnoreCase);
-                        m = r.Match(s);
-
-                        if (m.Success)
-                        {
-                            UInt16 modindex = Convert.ToUInt16(m.Groups[1].Value);
-                            MxFixedObjects mxf = new MxFixedObjects(eds[s],modindex);
-
-                            if (!modules.ContainsKey(modindex))
-                                modules.Add(modindex, new Module(modindex));
-
-                            modules[modindex].mxfo = mxf;
-
-                        }
-                    }
-                }
-
-
-                if (eds.ContainsKey("ConnectedModules"))
-                {
-                    cm = new ConnectedModules(eds["ConnectedModules"]);              
-                }
-
-                 //COMPACT PDO
-
-                if (di.CompactPDO != 0)
-                {
-
-                    for (UInt16 index = 0x1400; index < 0x1600; index++)
-                    {
-                        ApplycompactPDO(index);
-                    }
-
-                    for (UInt16 index = 0x1800; index < 0x1A00;index ++)
-                    {
-                        ApplycompactPDO(index);
-                    }
-                }
-
-                ApplyimplicitPDO();
-            }
-            // catch(Exception e)
-            //{
-            //  Console.WriteLine("** ALL GONE WRONG **" + e.ToString());
-            // }
-        }
-
         public void ApplycompactPDO(UInt16 index)
         {
             if (ods.ContainsKey(index))
@@ -2852,171 +1968,6 @@ namespace libEDSsharp
             }
 
             UpdatePDOcount();
-
-        }
-
-        public void Savefile(string filename, InfoSection.Filetype ft)
-        {
-            if(ft==InfoSection.Filetype.File_EDS)
-                this.edsfilename = filename;
-
-            if (ft == InfoSection.Filetype.File_DCF)
-            {
-                this.dcffilename = filename;
-                fi.LastEDS = edsfilename;
-            }
-
-            UpdatePDOcount();
-
-            //generate date times in DS306 format; h:mmtt MM-dd-yyyy
-
-            fi.CreationDate = fi.CreationDateTime.ToString("MM-dd-yyyy", CultureInfo.InvariantCulture);
-            fi.CreationTime = fi.CreationDateTime.ToString("h:mmtt", CultureInfo.InvariantCulture);
-
-            fi.ModificationDate = fi.ModificationDateTime.ToString("MM-dd-yyyy", CultureInfo.InvariantCulture);
-            fi.ModificationTime = fi.ModificationDateTime.ToString("h:mmtt", CultureInfo.InvariantCulture);
-
-            fi.FileName = Path.GetFileName(filename);
-
-            fi.EDSVersion = "4.0";
-            fi.EDSVersionMajor = 4;
-            fi.EDSVersionMinor = 0;
-
-            StreamWriter writer = System.IO.File.CreateText(filename);
-            writer.NewLine = "\n";
-            fi.Write(writer,ft);
-            di.Write(writer,ft);
-            du.Write(writer,ft);
-            c.Write(writer);
-
-            if(ft == InfoSection.Filetype.File_DCF)
-            {
-                dc.Write(writer,ft);
-            }
-
-            //regenerate the object lists
-            md.objectlist.Clear();
-            mo.objectlist.Clear();
-            oo.objectlist.Clear();
-
-            foreach (KeyValuePair<UInt16, ODentry> kvp in ods)
-            {
-                ODentry entry = kvp.Value;
-
-				if (entry.prop.CO_disabled == true)
-					continue;
-
-                if (entry.Index == 0x1000 || entry.Index == 0x1001 || entry.Index == 0x1018)
-                {
-                    md.objectlist.Add(md.objectlist.Count + 1, entry.Index);
-                }
-                else
-               if (entry.Index >= 0x2000 && entry.Index < 0x6000)
-                {
-                    mo.objectlist.Add(mo.objectlist.Count + 1, entry.Index);
-                }
-                else
-                {
-                    oo.objectlist.Add(oo.objectlist.Count + 1, entry.Index);
-                }
-            }
-
-            md.Write(writer);
-
-            foreach (KeyValuePair<UInt16, ODentry> kvp in ods)
-            {
-                ODentry od = kvp.Value;
-                if (md.objectlist.ContainsValue(od.Index))
-                {
-                    od.Write(writer,ft);
-                    foreach (KeyValuePair<UInt16, ODentry> kvp2 in od.subobjects)
-                    {
-                        ODentry od2 = kvp2.Value;
-                        od2.Write(writer,ft);
-                    }                    
-                }
-            }
-
-            oo.Write(writer);
-
-            foreach (KeyValuePair<UInt16, ODentry> kvp in ods)
-            {
-                ODentry od = kvp.Value;
-                if (oo.objectlist.ContainsValue(od.Index))
-                {
-                    od.Write(writer,ft);
-                    foreach (KeyValuePair<UInt16, ODentry> kvp2 in od.subobjects)
-                    {
-                        ODentry od2 = kvp2.Value;
-                        od2.Write(writer,ft);
-                    }                    
-                }
-            }
-
-            mo.Write(writer);
-
-            foreach (KeyValuePair<UInt16, ODentry> kvp in ods)
-            {
-                ODentry od = kvp.Value;
-                if (mo.objectlist.ContainsValue(od.Index))
-                {
-                    od.Write(writer,ft);
-                    foreach (KeyValuePair<UInt16, ODentry> kvp2 in od.subobjects)
-                    {
-                        ODentry od2 = kvp2.Value;
-                        od2.Write(writer,ft);
-                    }                    
-                }
-            }
-
-            //modules
-
-            if (sm.NrOfEntries > 0)
-            {
-                sm.Write(writer, ft);
-
-                for (UInt16 moduleid = 1; moduleid <= sm.NrOfEntries; moduleid++)
-                {
-
-                    modules[moduleid].mi.Write(writer, ft);
-
-                    modules[moduleid].mc.Write(writer);
-
-                    modules[moduleid].mse.Write(writer);
-
-
-                    foreach (KeyValuePair<UInt16, ODentry> kvp2 in modules[moduleid].modulesubext)
-                    {
-                        ODentry od = kvp2.Value;
-                        od.Write(writer, ft, ODentry.Odtype.SUBEXT, moduleid);
-
-                    }
-
-                    modules[moduleid].mxfo.Write(writer);
-
-                    foreach (KeyValuePair<UInt16, ODentry> kvp3 in modules[moduleid].modulefixedobjects)
-                    {
-                        ODentry od = kvp3.Value;
-                        od.Write(writer, ft, ODentry.Odtype.SUBEXT, moduleid);
-
-                        foreach (KeyValuePair<UInt16, ODentry> kvp4 in od.subobjects)
-                        {
-                            ODentry subod = kvp4.Value;
-                            subod.Write(writer, ft, ODentry.Odtype.FIXED, moduleid);
-                        }
-                    }
-                }
-            }
-
-            if (ft == InfoSection.Filetype.File_DCF)
-            {
-                if (cm.NrOfEntries > 0)
-                {
-                    cm.Write(writer);
-                }
-            }
-
-            writer.Close();
 
         }
 
