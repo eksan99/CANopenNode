@@ -633,6 +633,11 @@ namespace ODEditor
         private void ListView_objects_ColumnClick(object sender, ColumnClickEventArgs e)
         {
             ((ListView)sender).SelectedItems.Clear();
+
+            contextMenu_object.Show(Cursor.Position);
+            PopulateObject();
+            PopulateSubList();
+
             ListView_objects_MouseClick(sender, new MouseEventArgs(MouseButtons.Right, 0, 0, 0, 0));
         }
 
