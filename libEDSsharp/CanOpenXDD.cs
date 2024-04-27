@@ -496,7 +496,7 @@ namespace libEDSsharp
 
                         AppLayer.CANopenObjectList.CANopenObject[count].CANopenSubObject[subcount].edseditor_extension_notifyonchange = subod.prop.CO_flagsPDO;
 
-                        if (od.objecttype == ObjectType.ARRAY)
+                        if (od.objecttype == ObjectType.ARRAY && count != 0)
                             bytes = BitConverter.GetBytes((UInt16)od.datatype);
                         else
                             bytes = BitConverter.GetBytes((UInt16)subod.datatype);
