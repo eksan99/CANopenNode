@@ -385,7 +385,7 @@ namespace libEDSsharp
 
                 ODentry config = new ODentry();
                 config.Index = slot.ConfigurationIndex;
-                config.datatype = DataType.PDO_COMMUNICATION_PARAMETER;
+                config.datatype = DataType.UNKNOWN; // PDO_COMMUNICATION_PARAMETER;
                 config.objecttype = ObjectType.RECORD;
                 config.accesstype = slot.configAccessType;
                 config.prop.CO_storageGroup = slot.configloc;
@@ -485,7 +485,7 @@ namespace libEDSsharp
 
                 ODentry mapping = new ODentry();
                 mapping.Index = slot.MappingIndex;
-                mapping.datatype = DataType.PDO_MAPPING;
+                mapping.datatype = DataType.UNKNOWN; // PDO_MAPPING;
                 mapping.objecttype = ObjectType.RECORD;
 
                 if(slot.isTXPDO())
