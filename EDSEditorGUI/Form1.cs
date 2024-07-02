@@ -816,7 +816,7 @@ namespace ODEditor
             OpenFileDialog odf = new OpenFileDialog();
             odf.Filter = "All supported files (*.nxdd;*.nxdc)|*.nxdd;*.nxdc|"
                        + "CANopen Network XDD (*.nxdd)|*.nxdd|"
-                       + "CANopen Network XDC (*.nxdc)|*.nxdc|";
+                       + "CANopen Network XDC (*.nxdc)|*.nxdc";
 
             if (odf.ShowDialog() == DialogResult.OK)
             {
