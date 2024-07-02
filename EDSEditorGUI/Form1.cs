@@ -278,12 +278,13 @@ namespace ODEditor
             Warnings.warning_list.Clear();
 
             OpenFileDialog odf = new OpenFileDialog();
-            odf.Filter = "All supported files (*.xdd;*.xdc;*.xpd;*.eds;*.dcf)|*.xdd;*.xdc;*.xpd;*.eds;*.dcf|"
+            odf.Filter = "All supported files (*.xdd;*.xdc;*.xpd;*.eds;*.dcf;*.binpb;*.json)|*.xdd;*.xdc;*.xpd;*.eds;*.dcf;*.binpb;*.json|"
                        + "CANopen XDD (*.xdd)|*.xdd|"
                        + "CANopen XDC (*.xdc)|*.xdc|"
                        + "CANopen XPD (*.xpd)|*.xpd|"
                        + "Electronic Data Sheet (*.eds)|*.eds|"
-                       + "Device Configuration File (*.dcf)|*.dcf";
+                       + "Device Configuration File (*.dcf)|*.dcf|"
+                       + "CANopen Protobuffer (*.binpb;*.json)|*.binpb;*.json";
 
             if (odf.ShowDialog() == DialogResult.OK)
             {
@@ -302,6 +303,14 @@ namespace ODEditor
 
                     case ".dcf":
                         openEDSfile(odf.FileName, InfoSection.Filetype.File_DCF);
+                        break;
+
+                    case ".binpb":
+                        openProtobufferfile(odf.FileName, false);
+                        break;
+
+                    case ".json":
+                        openProtobufferfile(odf.FileName, true);
                         break;
 
                     default:
@@ -367,6 +376,49 @@ namespace ODEditor
 
 
 
+        }
+
+        private void openProtobufferfile(string path, bool json)
+        {
+            Warnings.warning_list.Clear();
+
+            try
+            {
+                EDSsharp eds;
+
+                CanOpenXDD_1_1 coxml_1_1 = new CanOpenXDD_1_1();
+                eds = coxml_1_1.ReadProtobuf(path, json);
+
+                if (eds == null)
+                {
+                    return;
+                }
+
+                eds.projectFilename = path;
+
+                DeviceView device = new DeviceView(eds, network);
+
+                device.UpdateODViewForEDS += Device_UpdateODViewForEDS;
+                eds.OnDataDirty += Eds_onDataDirty;
+
+                tabControl1.TabPages.Add(eds.di.ProductName);
+                tabControl1.TabPages[tabControl1.TabPages.Count - 1].Controls.Add(device);
+
+                device.Dock = DockStyle.Fill;
+                device.dispatch_updateOD();
+
+                network.Add(eds);
+            }
+            catch (Exception ex)
+            {
+                Warnings.warning_list.Add(ex.ToString());
+            }
+
+            if (Warnings.warning_list.Count != 0)
+            {
+                WarningsFrm frm = new WarningsFrm();
+                frm.Show();
+            }
         }
 
         private void Device_UpdateODViewForEDS(object sender, UpdateODViewEventArgs e)
@@ -484,6 +536,8 @@ namespace ODEditor
                 sfd.Filter = "CANopen XDD v1.1 stripped (*.xdd)|*.xdd|"  //must be first or change condition below
                            + "Electronic Data Sheet (*.eds)|*.eds|"
                            + "Device Configuration File (*.dcf)|*.dcf|"
+                           + "Protobuffer binary, experimental (*.binpb)|*.binpb|"
+                           + "Protobuffer JSON, experimental (*.json)|*.json|"
                            + "Documentation (*.md)|*.md|"
                            + "CANopen XDD v1.0, old (*.xdd)|*.xdd";
 
@@ -605,6 +659,20 @@ namespace ODEditor
                         dv.eds.xddfilename_1_0 = FileName;
                     }
                     break;
+
+                case ".binpb":
+                case ".json":
+                    Warnings.warning_list.Clear();
+
+                    CanOpenXDD_1_1 copb = new CanOpenXDD_1_1();
+                    copb.WriteProtobuf(FileName, dv.eds, Path.GetExtension(FileName) == ".json");
+
+                    if (Warnings.warning_list.Count != 0)
+                    {
+                        WarningsFrm frm = new WarningsFrm();
+                        frm.Show();
+                    }
+                    break;
             }
 
             dv.dispatch_updateOD();
@@ -683,6 +751,12 @@ namespace ODEditor
 
             if (ext == ".xdd" || ext == ".xdc" || ext == ".xpd")
                 openXDDfile(filepath);
+
+            else if (ext == ".binpb")
+                openProtobufferfile(filepath, false);
+            else if (ext == ".json")
+                openProtobufferfile(filepath, true);
+
             if ( ext == ".eds" )
                 openEDSfile(filepath, InfoSection.Filetype.File_EDS);
             if (ext == ".dcf")
@@ -1201,6 +1275,14 @@ namespace ODEditor
                             case ".nxdc":
                             case ".nxdd":
                                 openXDDNetworkfile(fileName);
+                                break;
+
+                            case ".binpb":
+                                openProtobufferfile(fileName, false);
+                                break;
+
+                            case ".json":
+                                openProtobufferfile(fileName, true);
                                 break;
 
                             default:
