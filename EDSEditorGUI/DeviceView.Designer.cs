@@ -40,11 +40,14 @@
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.deviceInfoView = new ODEditor.DeviceInfoView();
             this.tabControl1 = new System.Windows.Forms.TabControl();
+            this.tabPage5 = new System.Windows.Forms.TabPage();
+            this.moduleInfo1 = new ODEditor.ModuleInfo();
             this.tabPage4.SuspendLayout();
             this.tabPage3.SuspendLayout();
             this.tabPage2.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabControl1.SuspendLayout();
+            this.tabPage5.SuspendLayout();
             this.SuspendLayout();
             // 
             // imageList1
@@ -152,6 +155,7 @@
             this.tabControl1.Controls.Add(this.tabPage2);
             this.tabControl1.Controls.Add(this.tabPage3);
             this.tabControl1.Controls.Add(this.tabPage4);
+            this.tabControl1.Controls.Add(this.tabPage5);
             this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabControl1.ImageList = this.imageList1;
             this.tabControl1.Location = new System.Drawing.Point(0, 0);
@@ -160,6 +164,26 @@
             this.tabControl1.SelectedIndex = 0;
             this.tabControl1.Size = new System.Drawing.Size(1038, 773);
             this.tabControl1.TabIndex = 1;
+            // 
+            // tabPage5
+            // 
+            this.tabPage5.Controls.Add(this.moduleInfo1);
+            this.tabPage5.Location = new System.Drawing.Point(4, 23);
+            this.tabPage5.Name = "tabPage5";
+            this.tabPage5.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage5.Size = new System.Drawing.Size(1030, 746);
+            this.tabPage5.TabIndex = 4;
+            this.tabPage5.Text = "Modules";
+            this.tabPage5.UseVisualStyleBackColor = true;
+            // 
+            // moduleInfo1
+            // 
+            this.moduleInfo1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.moduleInfo1.Location = new System.Drawing.Point(3, 3);
+            this.moduleInfo1.Margin = new System.Windows.Forms.Padding(4);
+            this.moduleInfo1.Name = "moduleInfo1";
+            this.moduleInfo1.Size = new System.Drawing.Size(1024, 740);
+            this.moduleInfo1.TabIndex = 0;
             // 
             // DeviceView
             // 
@@ -176,6 +200,7 @@
             this.tabPage2.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
             this.tabControl1.ResumeLayout(false);
+            this.tabPage5.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -191,5 +216,7 @@
         private System.Windows.Forms.TabPage tabPage1;
         private DeviceInfoView deviceInfoView;
         private System.Windows.Forms.TabControl tabControl1;
+        private System.Windows.Forms.TabPage tabPage5;
+        private ModuleInfo moduleInfo1;
     }
 }
