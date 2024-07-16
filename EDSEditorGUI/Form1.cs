@@ -84,7 +84,7 @@ namespace ODEditor
                 foreach (string file in profilelist)
                 {
                     string ext = Path.GetExtension(file).ToLower();
-                    if (ext == ".xml" || ext == ".xpd" || ext == ".xdd")
+                    if (ext == ".xpd" || ext == ".xdd")
                     {
                         item = new ToolStripMenuItem();
                         item.Name = Path.GetFileName(file);
@@ -116,11 +116,10 @@ namespace ODEditor
                 if (item.Name == "///openFile")
                 {
                     OpenFileDialog odf = new OpenFileDialog();
-                    odf.Filter = "All supported files (*.xpd;*.xdd;*.xdc;*.xml)|*.xpd;*.xdd;*.xdc;*.xml|"
+                    odf.Filter = "All supported files (*.xpd;*.xdd;*.xdc)|*.xpd;*.xdd;*.xdc|"
                                + "CANopen XPD 1.1 (*.xpd)|*.xpd|"
                                + "CANopen XDD 1.1 (*.xdd)|*.xdd|"
-                               + "CANopen XDC 1.1 (*.xdc)|*.xdc|"
-                               + "CANopenNode XML, old (*.xml)|*.xml";
+                               + "CANopen XDC 1.1 (*.xdc)|*.xdc";
 
                     if (odf.ShowDialog() != DialogResult.OK)
                         return;
