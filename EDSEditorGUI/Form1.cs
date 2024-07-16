@@ -621,7 +621,7 @@ namespace ODEditor
                     break;
 
                 case ".md":
-                    DocumentationGen docgen = new DocumentationGen();
+                    DocumentationGenMarkup docgen = new DocumentationGenMarkup();
                     docgen.genmddoc(FileName, dv.eds, this.gitVersion);
                     dv.eds.mdfilename = FileName;
                     break;
@@ -1028,9 +1028,10 @@ namespace ODEditor
 
                     this.UseWaitCursor = true;
 
-                    DocumentationGen docgen = new DocumentationGen();
-                    docgen.genhtmldoc(temp, dv.eds);
-                    docgen.genmddoc(temp2, dv.eds, this.gitVersion);
+                    DocumentationGenHtml docgenHtml = new DocumentationGenHtml();
+                    docgenHtml.genhtmldoc(temp, dv.eds);
+                    DocumentationGenMarkup docgenMarkup = new DocumentationGenMarkup();
+                    docgenMarkup.genmddoc(temp2, dv.eds, this.gitVersion);
                     if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                     {
                         System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("cmd", $"/c start {temp2}"));
@@ -1092,7 +1093,7 @@ namespace ODEditor
 
                 if (dv.eds.mdfilename != null && dv.eds.mdfilename != "")
                 {
-                    DocumentationGen docgen = new DocumentationGen();
+                    DocumentationGenMarkup docgen = new DocumentationGenMarkup();
                     docgen.genmddoc(dv.eds.mdfilename, dv.eds, this.gitVersion);
                     cnt++;
                 }
