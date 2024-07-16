@@ -64,7 +64,7 @@
     <Compile Update="TableLayoutDB.cs">
       <SubType>Component</SubType>
     </Compile>
-    <None Update="Profiles\DS301_profile.xpd">
+    <None Include="Profiles\*.xpd">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
@@ -85,12 +85,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Index_8287_16x.ico" />
-    <Content Include="Profiles\DS301_profile_old.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Profiles\DSP302-NMTMaster.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <EmbeddedResource Include="version.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
