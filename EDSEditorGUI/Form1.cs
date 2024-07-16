@@ -306,11 +306,11 @@ namespace ODEditor
                         break;
 
                     case ".binpb":
-                        openProtobufferfile(odf.FileName, false);
+                        OpenProtobufferfile(odf.FileName, false);
                         break;
 
                     case ".json":
-                        openProtobufferfile(odf.FileName, true);
+                        OpenProtobufferfile(odf.FileName, true);
                         break;
 
                     default:
@@ -378,7 +378,7 @@ namespace ODEditor
 
         }
 
-        private void openProtobufferfile(string path, bool json)
+        private void OpenProtobufferfile(string path, bool json)
         {
             Warnings.warning_list.Clear();
 
@@ -753,9 +753,9 @@ namespace ODEditor
                 openXDDfile(filepath);
 
             else if (ext == ".binpb")
-                openProtobufferfile(filepath, false);
+                OpenProtobufferfile(filepath, false);
             else if (ext == ".json")
-                openProtobufferfile(filepath, true);
+                OpenProtobufferfile(filepath, true);
 
             if ( ext == ".eds" )
                 openEDSfile(filepath, InfoSection.Filetype.File_EDS);
@@ -1278,11 +1278,11 @@ namespace ODEditor
                                 break;
 
                             case ".binpb":
-                                openProtobufferfile(fileName, false);
+                                OpenProtobufferfile(fileName, false);
                                 break;
 
                             case ".json":
-                                openProtobufferfile(fileName, true);
+                                OpenProtobufferfile(fileName, true);
                                 break;
 
                             default:
