@@ -226,7 +226,8 @@ namespace ODEditor
             {
                 string savePath = Path.GetDirectoryName(FileName);
                 string baseFileName = Path.GetFileNameWithoutExtension(FileName);
-                exporter.export(savePath, baseFileName, this.gitVersion, dv.eds, baseFileName);
+                var filepath = $"{savePath}/{baseFileName}";
+                exporter.export(filepath, this.gitVersion, dv.eds, baseFileName);
             }
             catch (Exception ex)
             {

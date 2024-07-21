@@ -94,14 +94,14 @@ namespace libEDSsharp
         /// <summary>
         /// Export eds into CanOpenNode v1-3 source files (.h  and .c)
         /// </summary>
-        /// <param name="folderpath">folder path to save the files into</param>
-        /// <param name="filename">base filename, .c and .h will be added to this</param>
+        /// <param name="filepath">filepath, .c and .h will be added to this to make the mulitiple files</param>
         /// <param name="gitVersion">git version of this software</param>
         /// <param name="eds">the eds data to be exported</param>
         /// <param name="odname">object dictionary name</param>
-        public void export(string folderpath, string filename, string gitVersion, EDSsharp eds,string odname)
+        public void export(string filepath, string gitVersion, EDSsharp eds,string odname)
         {
-            this.folderpath = folderpath;
+            this.folderpath = Path.GetDirectoryName(filepath);
+            string filename = Path.GetFileNameWithoutExtension(filepath);
             this.gitVersion = gitVersion;
             this.eds = eds;
 

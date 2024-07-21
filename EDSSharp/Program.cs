@@ -103,8 +103,9 @@ namespace EDSSharp
             Warnings.warning_list.Clear();
 
             IExporter exporter = ExporterFactory.getExporter(type);
+            var filepath = Path.Combine(savePath, Path.GetFileNameWithoutExtension(outpath));
 
-            exporter.export(savePath, Path.GetFileNameWithoutExtension(outpath), gitversion, eds, odname);
+            exporter.export(filepath, gitversion, eds, odname);
 
             foreach(string warning in Warnings.warning_list)
             {

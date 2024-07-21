@@ -22,7 +22,7 @@ namespace Tests
 
             var cfilePath = fullPath + ".c";
             var hfilePath = fullPath + ".h";
-            export(path, tempfile, ".", eds, "OD_Test");
+            export(cfilePath, ".", eds, "OD_Test");
             cfile = File.ReadLines(cfilePath);
             hfile = File.ReadLines(hfilePath);
         }

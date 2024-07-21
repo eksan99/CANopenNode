@@ -14,11 +14,10 @@ namespace libEDSsharp
         /// <summary>
         /// Export file(s)
         /// </summary>
-        /// <param name="folderpath">Path to the folder that will contain the new files</param>
-        /// <param name="filename">base filename for the new files</param>
+        /// <param name="filepath">filepath, .c and .h will be added to this to make the mulitiple files</param>
         /// <param name="gitVersion">version that will be saved to the file</param>
         /// <param name="eds">The eds that will be exported</param>
         /// <param name="odname">The object dictionary name</param>
-        void export(string folderpath, string filename, string gitVersion, EDSsharp eds , string odname="OD");
+        void export(string filepath, string gitVersion, EDSsharp eds , string odname="OD");
     }
 }
