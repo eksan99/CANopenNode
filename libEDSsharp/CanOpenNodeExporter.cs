@@ -97,8 +97,7 @@ namespace libEDSsharp
         /// <param name="filepath">filepath, .c and .h will be added to this to make the mulitiple files</param>
         /// <param name="gitVersion">git version of this software</param>
         /// <param name="eds">the eds data to be exported</param>
-        /// <param name="odname">object dictionary name</param>
-        public void export(string filepath, string gitVersion, EDSsharp eds,string odname)
+        public void export(string filepath, string gitVersion, EDSsharp eds)
         {
             this.folderpath = Path.GetDirectoryName(filepath);
             string filename = Path.GetFileNameWithoutExtension(filepath);

@@ -92,8 +92,6 @@ namespace EDSSharp
 
         private static void exportCOOD(string outpath,ExporterFactory.Exporter type)
         {
-            string odname = outpath;
-
             outpath = Path.GetFullPath(outpath);
 
             string savePath = Path.GetDirectoryName(outpath);
@@ -105,7 +103,7 @@ namespace EDSSharp
             IExporter exporter = ExporterFactory.getExporter(type);
             var filepath = Path.Combine(savePath, Path.GetFileNameWithoutExtension(outpath));
 
-            exporter.export(filepath, gitversion, eds, odname);
+            exporter.export(filepath, gitversion, eds);
 
             foreach(string warning in Warnings.warning_list)
             {

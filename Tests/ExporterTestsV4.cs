@@ -14,7 +14,7 @@ namespace Tests
             _eds = new EDSsharp();
         }
 
-        void GetExportResult(EDSsharp eds, out IEnumerable<String> cfile, out IEnumerable<String> hfile)
+        void GetExportResult(EDSsharp eds, out IEnumerable<String> cfile, out IEnumerable<String> hfile, out string odname)
         {
             var fullPath = Path.GetTempFileName();
             var tempfile = Path.GetFileName(fullPath);
@@ -22,9 +22,10 @@ namespace Tests
 
             var cfilePath = fullPath + ".c";
             var hfilePath = fullPath + ".h";
-            export(cfilePath, ".", eds, "OD_Test");
+            export(cfilePath, ".", eds);
             cfile = File.ReadLines(cfilePath);
             hfile = File.ReadLines(hfilePath);
+            odname = tempfile;
         }
 
         bool FindExpectedLines(IEnumerable<String> lines, List<String> expectedLines)
@@ -85,12 +86,12 @@ namespace Tests
 
             _eds.ods.Add(0x2000, od);
 
-            GetExportResult(_eds, out var cfile, out var hfile);
-            Assert.True(FindExpectedLines(hfile, new List<string> { "#define OD_Test_ENTRY_H2000 &OD_Test->list[0]" }));
-            Assert.True(FindExpectedLines(hfile, new List<string> { "#define OD_Test_ENTRY_H2000_testString &OD_Test->list[0]" }));
+            GetExportResult(_eds, out var cfile, out var hfile, out var odname);
+            Assert.True(FindExpectedLines(hfile, new List<string> { $"#define {odname}_ENTRY_H2000 &{odname}->list[0]" }));
+            Assert.True(FindExpectedLines(hfile, new List<string> { $"#define {odname}_ENTRY_H2000_testString &{odname}->list[0]" }));
 
             Assert.True(FindExpectedLines(cfile, new List<string> {
-                "static CO_PROGMEM OD_TestObjs_t OD_TestObjs = {",
+               $"static CO_PROGMEM {odname}Objs_t {odname}Objs = {{",
                 "    .o_2000_testString = {",
                 "        .dataOrig = NULL,",
                 "        .attribute = ODA_SDO_R | ODA_STR,",
@@ -99,8 +100,8 @@ namespace Tests
                 "};"}));
 
             Assert.True(FindExpectedLines(cfile, new List<string> {
-                "static OD_Test_ATTR_OD OD_entry_t OD_TestList[] = {",
-                "    {0x2000, 0x01, ODT_VAR, &OD_TestObjs.o_2000_testString, NULL},",
+               $"static {odname}_ATTR_OD OD_entry_t {odname}List[] = {{",
+               $"    {{0x2000, 0x01, ODT_VAR, &{odname}Objs.o_2000_testString, NULL}},",
                 "    {0x0000, 0x00, 0, NULL, NULL}",
                 "};"}));
         }
@@ -123,25 +124,25 @@ namespace Tests
 
             _eds.ods.Add(0x2000, od);
 
-            GetExportResult(_eds, out var cfile, out var _);
+            GetExportResult(_eds, out var cfile, out var _, out var odname);
 
             Assert.True(FindExpectedLines(cfile, new List<string> {
-                "OD_Test_ATTR_RAM OD_Test_RAM_t OD_Test_RAM = {",
+               $"{odname}_ATTR_RAM {odname}_RAM_t {odname}_RAM = {{",
                $"    .x2000_testString = {{{expectedInitialValues}}}",
                 "};"}));
 
             Assert.True(FindExpectedLines(cfile, new List<string> {
-                "static CO_PROGMEM OD_TestObjs_t OD_TestObjs = {",
+               $"static CO_PROGMEM {odname}Objs_t {odname}Objs = {{",
                 "    .o_2000_testString = {",
-                "        .dataOrig = &OD_Test_RAM.x2000_testString[0],",
+               $"        .dataOrig = &{odname}_RAM.x2000_testString[0],",
                 "        .attribute = ODA_SDO_R | ODA_STR,",
                $"        .dataLength = {expectedLength}",
                 "    }",
                 "};"}));
 
             Assert.True(FindExpectedLines(cfile, new List<string> {
-                "static OD_Test_ATTR_OD OD_entry_t OD_TestList[] = {",
-                "    {0x2000, 0x01, ODT_VAR, &OD_TestObjs.o_2000_testString, NULL},",
+               $"static {odname}_ATTR_OD OD_entry_t {odname}List[] = {{",
+               $"    {{0x2000, 0x01, ODT_VAR, &{odname}Objs.o_2000_testString, NULL}},",
                 "    {0x0000, 0x00, 0, NULL, NULL}",
                 "};"}));
         }
@@ -165,18 +166,18 @@ namespace Tests
             od.subobjects[1].prop.CO_stringLengthMin = stringLengthMin;
             _eds.ods.Add(0x2000, od);
 
-            GetExportResult(_eds, out var cfile, out var hfile);
+            GetExportResult(_eds, out var cfile, out var hfile, out var odname);
             Assert.True(FindExpectedLines(hfile, new List<string> {
                 "typedef struct {",
                 "    struct {",
                 "        uint8_t numElements;",
                $"        char str[{expectedLength+1}];",
                 "    } x2000_testRec;",
-                "} OD_Test_RAM_t;"}));
+               $"}} {odname}_RAM_t;"}));
 
             Assert.True(FindExpectedLines(cfile, new List<string>
             {
-                "OD_Test_ATTR_RAM OD_Test_RAM_t OD_Test_RAM = {",
+               $"{odname}_ATTR_RAM {odname}_RAM_t {odname}_RAM = {{",
                 "    .x2000_testRec = {",
                 "        .numElements = 0x00,",
                $"        .str = {{{expectedInitialValues}}}",
@@ -187,20 +188,20 @@ namespace Tests
             {
                 "typedef struct {",
                 "    OD_obj_record_t o_2000_testRec[2];",
-                "} OD_TestObjs_t;"}));
+               $"}} {odname}Objs_t;"}));
 
             Assert.True(FindExpectedLines(cfile, new List<string>
             {
-                "static CO_PROGMEM OD_TestObjs_t OD_TestObjs = {",
+               $"static CO_PROGMEM {odname}Objs_t {odname}Objs = {{",
                 "    .o_2000_testRec = {",
                 "        {",
-                "            .dataOrig = &OD_Test_RAM.x2000_testRec.numElements,",
+               $"            .dataOrig = &{odname}_RAM.x2000_testRec.numElements,",
                 "            .subIndex = 0,",
                 "            .attribute = ODA_SDO_RW | ODA_TRPDO,",
                 "            .dataLength = 1",
                 "        },",
                 "        {",
-                "            .dataOrig = &OD_Test_RAM.x2000_testRec.str[0],",
+               $"            .dataOrig = &{odname}_RAM.x2000_testRec.str[0],",
                 "            .subIndex = 1,",
                 "            .attribute = ODA_SDO_RW | ODA_TRPDO | ODA_STR,",
                $"            .dataLength = {expectedLength}",
@@ -210,8 +211,8 @@ namespace Tests
 
             Assert.True(FindExpectedLines(cfile, new List<string>
             {
-                "static OD_Test_ATTR_OD OD_entry_t OD_TestList[] = {",
-                "    {0x2000, 0x02, ODT_REC, &OD_TestObjs.o_2000_testRec, NULL},",
+               $"static {odname}_ATTR_OD OD_entry_t {odname}List[] = {{",
+               $"    {{0x2000, 0x02, ODT_REC, &{odname}Objs.o_2000_testRec, NULL}},",
                 "    {0x0000, 0x00, 0, NULL, NULL}",
                 "};"}));
         }
@@ -231,17 +232,17 @@ namespace Tests
             od.addsubobject(1, new ODentry("str", 0x2000, DataType.VISIBLE_STRING, "", EDSsharp.AccessType.rw, PDOMappingType.optional));
             _eds.ods.Add(0x2000, od);
 
-            GetExportResult(_eds, out var cfile, out var hfile);
+            GetExportResult(_eds, out var cfile, out var hfile, out var odname);
             Assert.True(FindExpectedLines(hfile, new List<string> {
                 "typedef struct {",
                 "    struct {",
                 "        uint8_t numElements;",
                 "    } x2000_testRec;",
-                "} OD_Test_RAM_t;"}));
+               $"}} {odname}_RAM_t;"}));
 
             Assert.True(FindExpectedLines(cfile, new List<string>
             {
-                "OD_Test_ATTR_RAM OD_Test_RAM_t OD_Test_RAM = {",
+               $"{odname}_ATTR_RAM {odname}_RAM_t {odname}_RAM = {{",
                 "    .x2000_testRec = {",
                 "        .numElements = 0x00",
                 "    }",
@@ -251,14 +252,14 @@ namespace Tests
             {
                 "typedef struct {",
                 "    OD_obj_record_t o_2000_testRec[2];",
-                "} OD_TestObjs_t;"}));
+               $"}} {odname}Objs_t;"}));
 
             Assert.True(FindExpectedLines(cfile, new List<string>
             {
-                "static CO_PROGMEM OD_TestObjs_t OD_TestObjs = {",
+               $"static CO_PROGMEM {odname}Objs_t {odname}Objs = {{",
                 "    .o_2000_testRec = {",
                 "        {",
-                "            .dataOrig = &OD_Test_RAM.x2000_testRec.numElements,",
+               $"            .dataOrig = &{odname}_RAM.x2000_testRec.numElements,",
                 "            .subIndex = 0,",
                 "            .attribute = ODA_SDO_RW | ODA_TRPDO,",
                 "            .dataLength = 1",
@@ -274,8 +275,8 @@ namespace Tests
 
             Assert.True(FindExpectedLines(cfile, new List<string>
             {
-                "static OD_Test_ATTR_OD OD_entry_t OD_TestList[] = {",
-                "    {0x2000, 0x02, ODT_REC, &OD_TestObjs.o_2000_testRec, NULL},",
+               $"static {odname}_ATTR_OD OD_entry_t {odname}List[] = {{",
+               $"    {{0x2000, 0x02, ODT_REC, &{odname}Objs.o_2000_testRec, NULL}},",
                 "    {0x0000, 0x00, 0, NULL, NULL}",
                 "};"}));
         }
