@@ -622,7 +622,7 @@ namespace ODEditor
 
                 case ".md":
                     DocumentationGenMarkup docgen = new DocumentationGenMarkup();
-                    docgen.genmddoc(FileName, dv.eds, this.gitVersion);
+                    docgen.genmddoc(FileName, dv.eds);
                     dv.eds.mdfilename = FileName;
                     break;
 
@@ -873,12 +873,12 @@ namespace ODEditor
 
                     case 2: // .nxdc V1.1 with actual value, denotation and deviceCommissioning info
                         CanOpenXDD_1_1 xdc_1_1 = new CanOpenXDD_1_1();
-                        xdc_1_1.WriteMultiXML(sfd.FileName, network, this.gitVersion, true);
+                        xdc_1_1.WriteMultiXML(sfd.FileName, network, true);
                         break;
 
                     case 1: // .nxdd V1.1
                         CanOpenXDD_1_1 xdd_1_1 = new CanOpenXDD_1_1();
-                        xdd_1_1.WriteMultiXML(sfd.FileName, network, this.gitVersion, false);
+                        xdd_1_1.WriteMultiXML(sfd.FileName, network, false);
                         break;
                 }
             }
@@ -1031,7 +1031,7 @@ namespace ODEditor
                     DocumentationGenHtml docgenHtml = new DocumentationGenHtml();
                     docgenHtml.genhtmldoc(temp, dv.eds);
                     DocumentationGenMarkup docgenMarkup = new DocumentationGenMarkup();
-                    docgenMarkup.genmddoc(temp2, dv.eds, this.gitVersion);
+                    docgenMarkup.genmddoc(temp2, dv.eds);
                     if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                     {
                         System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("cmd", $"/c start {temp2}"));
@@ -1094,7 +1094,7 @@ namespace ODEditor
                 if (dv.eds.mdfilename != null && dv.eds.mdfilename != "")
                 {
                     DocumentationGenMarkup docgen = new DocumentationGenMarkup();
-                    docgen.genmddoc(dv.eds.mdfilename, dv.eds, this.gitVersion);
+                    docgen.genmddoc(dv.eds.mdfilename, dv.eds);
                     cnt++;
                 }
 

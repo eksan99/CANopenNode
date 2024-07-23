@@ -30,6 +30,7 @@ using LibCanOpen;
 using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
 using System.Linq;
+using System.Reflection;
 
 namespace libEDSsharp
 {
@@ -98,10 +99,15 @@ namespace libEDSsharp
         /// </summary>
         /// <param name="file">Name of the multi xdd file</param>
         /// <param name="edss">List of EDSsharp objects</param>
-        /// <param name="gitVersion">Git version string for documentation field</param>
         /// <param name="deviceCommissioning">If true, device commisioning, denotations and actual values will be included</param>
-        public void WriteMultiXML(string file, List<EDSsharp> edss, string gitVersion, bool deviceCommissioning)
+        public void WriteMultiXML(string file, List<EDSsharp> edss, bool deviceCommissioning)
         {
+            var versionAttributes = Assembly
+                .GetExecutingAssembly()
+                .GetCustomAttributes(typeof(AssemblyInformationalVersionAttribute), false)
+                as AssemblyInformationalVersionAttribute[];
+
+            string gitVersion = versionAttributes[0].InformationalVersion;
             List<ISO15745ProfileContainer> devs = new List<ISO15745ProfileContainer>();
 
             foreach (EDSsharp eds in edss)

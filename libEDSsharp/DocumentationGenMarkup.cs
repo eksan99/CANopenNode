@@ -21,6 +21,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 
 namespace libEDSsharp
 {
@@ -36,9 +37,14 @@ namespace libEDSsharp
         /// </summary>
         /// <param name="filepath">where the documentation should be created</param>
         /// <param name="eds">data to generate the documentation from</param>
-        /// <param name="gitVersion">git version of this software</param>
-        public void genmddoc(string filepath, EDSsharp eds, string gitVersion)
+        public void genmddoc(string filepath, EDSsharp eds)
         {
+            var versionAttributes = Assembly
+                .GetExecutingAssembly()
+                .GetCustomAttributes(typeof(AssemblyInformationalVersionAttribute), false)
+                as AssemblyInformationalVersionAttribute[];
+
+            string gitVersion = versionAttributes[0].InformationalVersion;
             file = new StreamWriter(filepath, false);
             file.NewLine = "\n";
 
