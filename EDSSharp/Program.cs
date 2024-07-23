@@ -12,7 +12,6 @@ namespace EDSSharp
     {
 
         static libEDSsharp.EDSsharp eds = new EDSsharp();
-        static string gitversion = "";
 
         static void Main(string[] args)
         {
