@@ -24,6 +24,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 
 namespace libEDSsharp
 {
@@ -50,9 +51,8 @@ namespace libEDSsharp
         /// export the current data set in the CanOpen Node format V4
         /// </summary>
         /// <param name="filepath">filepath, .c and .h will be added to this to make the mulitiple files</param>
-        /// <param name="gitVersion"></param>
         /// <param name="eds"></param>
-        public void export(string filepath, string gitVersion, EDSsharp eds)
+        public void export(string filepath, EDSsharp eds)
         {
             string filename = Path.GetFileNameWithoutExtension(filepath);
             string folderpath = Path.GetDirectoryName(filepath);
@@ -60,6 +60,12 @@ namespace libEDSsharp
 
             Prepare(eds);
 
+            var versionAttributes = Assembly
+                .GetExecutingAssembly()
+                .GetCustomAttributes(typeof(AssemblyInformationalVersionAttribute), false)
+                as AssemblyInformationalVersionAttribute[];
+
+            string gitVersion = versionAttributes[0].InformationalVersion;
             Export_h(folderpath, filename, gitVersion, eds);
             Export_c(folderpath, filename, gitVersion, eds);
         }

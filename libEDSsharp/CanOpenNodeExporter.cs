@@ -26,6 +26,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.IO;
+using System.Reflection;
 
 
 
@@ -95,13 +96,17 @@ namespace libEDSsharp
         /// Export eds into CanOpenNode v1-3 source files (.h  and .c)
         /// </summary>
         /// <param name="filepath">filepath, .c and .h will be added to this to make the mulitiple files</param>
-        /// <param name="gitVersion">git version of this software</param>
         /// <param name="eds">the eds data to be exported</param>
-        public void export(string filepath, string gitVersion, EDSsharp eds)
+        public void export(string filepath, EDSsharp eds)
         {
             this.folderpath = Path.GetDirectoryName(filepath);
             string filename = Path.GetFileNameWithoutExtension(filepath);
-            this.gitVersion = gitVersion;
+            var versionAttributes = Assembly
+                .GetExecutingAssembly()
+                .GetCustomAttributes(typeof(AssemblyInformationalVersionAttribute), false)
+                as AssemblyInformationalVersionAttribute[];
+
+            this.gitVersion = versionAttributes[0].InformationalVersion;
             this.eds = eds;
 
 
