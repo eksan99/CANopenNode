@@ -39,6 +39,11 @@ namespace EDSSharp
                         argskvp.Add("--type", args[argv + 1]);
                     }
 
+                    if (args[argv] == "--edsfile")
+                    {
+                        argskvp.Add("--edsfile", args[argv + 1]);
+                    }
+
                     argv++;
                 }
 
@@ -57,6 +62,10 @@ namespace EDSSharp
                     {
                         case ".xdd":
                             openXDDfile(infile, outfile,type);
+                            if(argskvp.ContainsKey("--edsfile"))
+                            {
+                                eds.Savefile(argskvp["--edsfile"], InfoSection.Filetype.File_EDS);
+                            }
                             break;
 
                         case ".eds":
