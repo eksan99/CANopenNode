@@ -28,10 +28,25 @@ namespace libEDSsharp
     /// <summary>
     /// Documentation generator
     /// </summary>
-    public class DocumentationGenMarkup
+    public class DocumentationGenMarkup : IFileExporter
     {
         StreamWriter file = null;
 
+        /// <summary>
+        /// Fetches all the different fileexporter types the class supports
+        /// </summary>
+        /// <returns>List of the different exporters the class supports</returns>
+        public ExporterDiscriptor[] GetExporters()
+        {
+            return new ExporterDiscriptor[]
+            {
+                new ExporterDiscriptor("Documentation Markup", new string[] { ".md" }, ExporterDiscriptor.ExporterFlags.Documentation, delegate (string filepath, List<EDSsharp> edss)
+                {
+                    var e = new DocumentationGenMarkup();
+                    e.genmddoc(filepath, edss[0]);
+                })
+            };
+        }
         /// <summary>
         /// Generate markup documentation
         /// </summary>
