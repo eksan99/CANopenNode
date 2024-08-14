@@ -24,9 +24,9 @@ namespace ODEditor
 
         PDOSlot selectedslot = null;
 
-        CellBackColorAlternate viewNormal = new CellBackColorAlternate(Color.Khaki, Color.DarkKhaki);
-        CellBackColorAlternate viewEmpty = new CellBackColorAlternate(Color.Gray, Color.Gray);
-        CellBackColorAlternate viewCOB = new CellBackColorAlternate(Color.LightBlue, Color.Blue);
+        CellBackColorAlternate viewNormal = new CellBackColorAlternate(Color.Khaki, Color.LemonChiffon);
+        CellBackColorAlternate viewEmpty = new CellBackColorAlternate(Color.LightGray, Color.Gainsboro);
+        CellBackColorAlternate viewCOB = new CellBackColorAlternate(Color.LightBlue, Color.LightCyan);
 
         Point RightClickPoint = new Point(0, 0);
 
