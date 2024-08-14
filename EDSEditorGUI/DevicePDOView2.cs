@@ -62,7 +62,7 @@ namespace ODEditor
                 grid1[1, 3 + x * 8] = new MyHeader(string.Format("Byte {0}", x));
                 grid1[1, 3 + x * 8].ColumnSpan = 8;
 
-                grid1[1, 3 + x * 8].View.BackColor = Color.Red;
+                grid1[1, 3 + x * 8].View.BackColor = Color.Tomato;
 
             }
 
@@ -541,12 +541,12 @@ namespace ODEditor
                 view.Font = new Font(FontFamily.GenericSansSerif, 8, FontStyle.Bold);
                 view.WordWrap = true;
                 view.TextAlignment = DevAge.Drawing.ContentAlignment.MiddleCenter;
-                view.BackColor = Color.Red;
+                view.BackColor = Color.Tomato;
 
                 string text = value.ToString();
                 if (text == "0" || text == "8" || text == "16" || text == "24" || text == "32" || text == "40" || text == "48" || text == "56")
                 {
-                    view.ForeColor = Color.Red;
+                    view.ForeColor = Color.Tomato;
                 }
 
                 View = view;
