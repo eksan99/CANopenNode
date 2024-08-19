@@ -135,7 +135,7 @@ namespace ODEditor
         {
             var result = false;
 
-            if (button_saveChanges.BackColor == Color.Red)
+            if (button_saveChanges.BackColor == Color.Tomato)
             {
 
                 var answer = checkBox_autosave.Checked 
@@ -435,7 +435,7 @@ namespace ODEditor
         private void DataDirty(object sender, EventArgs e)
         {
             if (!justUpdating)
-                button_saveChanges.BackColor = Color.Red;
+                button_saveChanges.BackColor = Color.Tomato;
         }
 
         private void Button_saveChanges_Click(object sender, EventArgs e)

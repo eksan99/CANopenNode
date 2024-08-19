@@ -452,7 +452,7 @@ namespace ODEditor
                         DeviceView d = (DeviceView)c;
                         if (d.eds.Dirty == true)
                         {
-                            page.BackColor = Color.Red;
+                            page.BackColor = Color.Tomato;
                         }
                         else
                         {
