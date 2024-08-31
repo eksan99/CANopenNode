@@ -174,12 +174,12 @@ namespace EDSSharp
 
         static void PrintHelpText()
         {
-            Console.WriteLine("Usage: EDSEditor --infile file.[xdd|eds] --outfile [valid output file] [OPTIONAL] --type [valid type]");
+            Console.WriteLine("Usage: EDSEditor --infile file.[xdd|eds] --outfile [valid output file] [OPTIONAL] --type [exporter type]");
             Console.WriteLine("The output file format depends on --outfile extension and --type");
             Console.WriteLine("If --outfile extension matcher one exporter then --type IS NOT needed");
             Console.WriteLine("If --outfile extension matcher multiple exporter then --type IS needed");
             Console.WriteLine("If --outfile has no extension --type IS needed");
-            Console.WriteLine("Exporters:");
+            Console.WriteLine("Exporter types:");
 
             var exporters = Filetypes.GetExporters();
             foreach (var exporter in exporters)
