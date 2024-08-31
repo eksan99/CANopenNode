@@ -31,7 +31,7 @@ namespace libEDSsharp
     /// <summary>
     /// Exporter for CanOpenNode_V4
     /// </summary>
-    public class CanOpenNodeExporter_V4 : IExporter
+    public class CanOpenNodeExporter_V4 : IExporter, IFileExporter
     {
         private string odname;
 
@@ -46,6 +46,22 @@ namespace libEDSsharp
         private List<string> ODDefinesLong;
         private Dictionary<string, UInt16> ODCnt;
         private Dictionary<string, int> ODArrSize;
+
+        /// <summary>
+        /// Fetches all the different fileexporter types the class supports
+        /// </summary>
+        /// <returns>List of the different exporters the class supports</returns>
+        public ExporterDescriptor[] GetExporters()
+        {
+            return new ExporterDescriptor[]
+            {
+                new ExporterDescriptor("CanOpenNodeV4", new string[] { ".h", ".c" }, ExporterDescriptor.ExporterFlags.CanOpenNode, delegate (string filepath, List<EDSsharp> edss)
+                {
+                    var e = new CanOpenNodeExporter_V4();
+                    e.export(filepath, edss[0]);
+                })
+            };
+        }
 
         /// <summary>
         /// export the current data set in the CanOpen Node format V4

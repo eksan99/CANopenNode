@@ -26,9 +26,20 @@ namespace libEDSsharp
     /// <summary>
     /// Generate a PDO network report
     /// </summary>
-    public class NetworkPDOreport
+    public class NetworkPDOreport : IFileExporter
     {
 
+        public ExporterDescriptor[] GetExporters()
+        {
+            return new ExporterDescriptor[]
+            {
+                new ExporterDescriptor("Network PDO Report", new string[] { ".md" }, ExporterDescriptor.ExporterFlags.Documentation | ExporterDescriptor.ExporterFlags.MultipleNodeSupport, delegate (string filepath, List<EDSsharp> edss)
+                {
+                    var e = new NetworkPDOreport();
+                    e.gennetpdodoc(filepath, edss);
+                })
+            };
+        }
         StreamWriter file = null;
         /// <summary>
         /// Generate a PDO network report

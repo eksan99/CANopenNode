@@ -1666,7 +1666,7 @@ namespace libEDSsharp
 
     }
 
-    public partial class EDSsharp
+    public partial class EDSsharp : IFileExporter
     {
 
         public enum AccessType
@@ -1757,6 +1757,24 @@ namespace libEDSsharp
 
         public delegate void DataDirty(bool dirty, EDSsharp sender);
         public event DataDirty OnDataDirty;
+
+        /// <summary>
+        /// Fetches all the different fileexporter types the class supports
+        /// </summary>
+        /// <returns>List of the different exporters the class supports</returns>
+        public ExporterDescriptor[] GetExporters()
+        {
+            return new ExporterDescriptor[] {
+                new ExporterDescriptor("Electronic Data Sheet", new string[] { ".eds" }, 0, delegate (string filepath, List<EDSsharp> eds)
+                {
+                    eds[0].Savefile(filepath, InfoSection.Filetype.File_EDS);
+                }),
+                new ExporterDescriptor("Device Configuration File", new string[] { ".dcf" }, 0, delegate (string filepath, List<EDSsharp> eds)
+                {
+                    eds[0].Savefile(filepath, InfoSection.Filetype.File_DCF);
+                })
+            };
+        }
 
         public EDSsharp()
         {

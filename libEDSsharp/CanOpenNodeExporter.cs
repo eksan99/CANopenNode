@@ -35,7 +35,7 @@ namespace libEDSsharp
     /// <summary>
     /// Export .c and .h files for CanOpenNode v1-3
     /// </summary>
-    public class CanOpenNodeExporter : IExporter
+    public class CanOpenNodeExporter : IExporter, IFileExporter
     {
 
         private string folderpath;
@@ -58,6 +58,22 @@ namespace libEDSsharp
         private byte maxTXmappingsize = 0;
         ODentry maxRXmappingsOD=null;
         ODentry maxTXmappingsOD=null;
+
+        /// <summary>
+        /// Fetches all the different fileexporter types the class supports
+        /// </summary>
+        /// <returns>List of the different exporters the class supports</returns>
+        public ExporterDescriptor[] GetExporters()
+        {
+            return new ExporterDescriptor[]
+            {
+                new ExporterDescriptor("CanOpenNode", new string[] { ".h", ".c" }, ExporterDescriptor.ExporterFlags.CanOpenNode, delegate (string filepath, List<EDSsharp> edss)
+                {
+                    var e = new CanOpenNodeExporter();
+                    e.export(filepath, edss[0]);
+                })
+            };
+        }
 
         /// <summary>
         /// Register names of index and subindex that need to have standard names to be able to work with CanOpenNode

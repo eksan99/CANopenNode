@@ -643,7 +643,7 @@ namespace ODEditor
                         Warnings.warning_list.Clear();
 
                         CanOpenXDD_1_1 coxdd = new CanOpenXDD_1_1();
-                        coxdd.WriteXML(FileName, dv.eds, this.gitVersion, Path.GetExtension(FileName) == ".xdc", stripped);
+                        coxdd.WriteXML(FileName, dv.eds, Path.GetExtension(FileName) == ".xdc", stripped);
                         dv.eds.Dirty = false;
 
                         if (Warnings.warning_list.Count != 0)

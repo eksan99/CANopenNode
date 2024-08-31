@@ -29,9 +29,30 @@ using System.Collections.Generic;
 
 namespace libEDSsharp
 {
-    public class CanOpenXDD
+    public class CanOpenXDD : IFileExporter
     {
         public ISO15745ProfileContainer dev;
+
+        /// <summary>
+        /// Fetches all the different fileexporter types the class supports
+        /// </summary>
+        /// <returns>List of the different exporters the class supports</returns>
+        public ExporterDescriptor[] GetExporters()
+        {
+            return new ExporterDescriptor[] { 
+                new ExporterDescriptor("CanOpen XDD v1.0", new string[] { ".xdd" }, 0, delegate (string filepath, List<EDSsharp> edss)
+                {
+                    var e = new CanOpenXDD();
+                    e.writeXML(filepath,edss[0]);
+                }),
+                new ExporterDescriptor("CanOpen Network v1.0", new string[] { ".nxdd" }, ExporterDescriptor.ExporterFlags.MultipleNodeSupport, delegate (string filepath, List<EDSsharp> edss)
+                {
+                    var e = new CanOpenXDD();
+                    e.writeMultiXML(filepath,edss);
+                })
+            };
+        }
+
         public EDSsharp readXML(string file)
         {
 
