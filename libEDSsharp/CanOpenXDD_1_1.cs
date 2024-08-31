@@ -71,6 +71,16 @@ namespace libEDSsharp
                 {
                     var e = new CanOpenXDD_1_1();
                     e.WriteMultiXML(filepath,edss,true);
+                }),
+                new ExporterDescriptor("CanOpenNode Protobuf (json)", new string[] { ".json" }, 0, delegate (string filepath, List<EDSsharp> edss)
+                {
+                    var e = new CanOpenXDD_1_1();
+                    e.WriteProtobuf(filepath,edss[0],true);
+                }),
+                new ExporterDescriptor("CanOpenNode Protobuf (binary)", new string[] { ".binpb" }, 0, delegate (string filepath, List<EDSsharp> edss)
+                {
+                    var e = new CanOpenXDD_1_1();
+                    e.WriteProtobuf(filepath,edss[0],false);
                 })
             };
         }
