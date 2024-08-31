@@ -29,11 +29,11 @@ namespace libEDSsharp
     public class NetworkPDOreport : IFileExporter
     {
 
-        public ExporterDiscriptor[] GetExporters()
+        public ExporterDescriptor[] GetExporters()
         {
-            return new ExporterDiscriptor[]
+            return new ExporterDescriptor[]
             {
-                new ExporterDiscriptor("Network PDO Report", new string[] { ".md" }, ExporterDiscriptor.ExporterFlags.Documentation | ExporterDiscriptor.ExporterFlags.MultipleNodeSupport, delegate (string filepath, List<EDSsharp> edss)
+                new ExporterDescriptor("Network PDO Report", new string[] { ".md" }, ExporterDescriptor.ExporterFlags.Documentation | ExporterDescriptor.ExporterFlags.MultipleNodeSupport, delegate (string filepath, List<EDSsharp> edss)
                 {
                     var e = new NetworkPDOreport();
                     e.gennetpdodoc(filepath, edss);

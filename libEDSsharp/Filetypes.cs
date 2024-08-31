@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using static libEDSsharp.ExporterDiscriptor;
+using static libEDSsharp.ExporterDescriptor;
 
 namespace libEDSsharp
 {
@@ -15,9 +15,9 @@ namespace libEDSsharp
         /// </summary>
         /// <param name="flags">optional filter to filter out different types of exporters</param>
         /// <returns>list of file exporter that matches the filter</returns>
-        public static ExporterDiscriptor[] GetExporters(ExporterFlags flags = 0)
+        public static ExporterDescriptor[] GetExporters(ExporterFlags flags = 0)
         {
-            var exporters = new List<ExporterDiscriptor>();
+            var exporters = new List<ExporterDescriptor>();
             foreach (Type mytype in System.Reflection.Assembly.GetExecutingAssembly().GetTypes()
                 .Where(mytype => mytype.GetInterfaces().Contains(typeof(IFileExporter))))
             {

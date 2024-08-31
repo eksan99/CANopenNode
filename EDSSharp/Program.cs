@@ -136,13 +136,13 @@ namespace EDSSharp
 
         }
 
-        static ExporterDiscriptor FindMatchingExporter(string outpath, string outType)
+        static ExporterDescriptor FindMatchingExporter(string outpath, string outType)
         {
             //Find exporter(s) matching the file extension
             var exporters = Filetypes.GetExporters();
 
             var outFiletype = Path.GetExtension(outpath);
-            var exporterMatchingFiletype = new List<ExporterDiscriptor>();
+            var exporterMatchingFiletype = new List<ExporterDescriptor>();
             foreach (var exporter in exporters)
             {
                 foreach (var type in exporter.Filetypes)

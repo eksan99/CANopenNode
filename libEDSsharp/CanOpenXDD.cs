@@ -37,15 +37,15 @@ namespace libEDSsharp
         /// Fetches all the different fileexporter types the class supports
         /// </summary>
         /// <returns>List of the different exporters the class supports</returns>
-        public ExporterDiscriptor[] GetExporters()
+        public ExporterDescriptor[] GetExporters()
         {
-            return new ExporterDiscriptor[] { 
-                new ExporterDiscriptor("CanOpen XDD v1.0", new string[] { ".xdd" }, 0, delegate (string filepath, List<EDSsharp> edss)
+            return new ExporterDescriptor[] { 
+                new ExporterDescriptor("CanOpen XDD v1.0", new string[] { ".xdd" }, 0, delegate (string filepath, List<EDSsharp> edss)
                 {
                     var e = new CanOpenXDD();
                     e.writeXML(filepath,edss[0]);
                 }),
-                new ExporterDiscriptor("CanOpen XPD v1.0", new string[] { ".xpd" }, ExporterDiscriptor.ExporterFlags.MultipleNodeSupport, delegate (string filepath, List<EDSsharp> edss)
+                new ExporterDescriptor("CanOpen XPD v1.0", new string[] { ".xpd" }, ExporterDescriptor.ExporterFlags.MultipleNodeSupport, delegate (string filepath, List<EDSsharp> edss)
                 {
                     var e = new CanOpenXDD();
                     e.writeMultiXML(filepath,edss);

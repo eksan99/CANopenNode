@@ -35,11 +35,11 @@ namespace libEDSsharp
         /// Fetches all the different fileexporter types the class supports
         /// </summary>
         /// <returns>List of the different exporters the class supports</returns>
-        public ExporterDiscriptor[] GetExporters()
+        public ExporterDescriptor[] GetExporters()
         {
-            return new ExporterDiscriptor[]
+            return new ExporterDescriptor[]
             {
-                new ExporterDiscriptor("Documentation HTML", new string[] { ".html" }, ExporterDiscriptor.ExporterFlags.Documentation, delegate (string filepath, List<EDSsharp> edss)
+                new ExporterDescriptor("Documentation HTML", new string[] { ".html" }, ExporterDescriptor.ExporterFlags.Documentation, delegate (string filepath, List<EDSsharp> edss)
                 {
                     var e = new DocumentationGenMarkup();
                     e.genmddoc(filepath, edss[0]);

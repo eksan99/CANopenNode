@@ -51,11 +51,11 @@ namespace libEDSsharp
         /// Fetches all the different fileexporter types the class supports
         /// </summary>
         /// <returns>List of the different exporters the class supports</returns>
-        public ExporterDiscriptor[] GetExporters()
+        public ExporterDescriptor[] GetExporters()
         {
-            return new ExporterDiscriptor[]
+            return new ExporterDescriptor[]
             {
-                new ExporterDiscriptor("CanOpenNodeV4", new string[] { ".h", ".c" }, ExporterDiscriptor.ExporterFlags.CanOpenNode, delegate (string filepath, List<EDSsharp> edss)
+                new ExporterDescriptor("CanOpenNodeV4", new string[] { ".h", ".c" }, ExporterDescriptor.ExporterFlags.CanOpenNode, delegate (string filepath, List<EDSsharp> edss)
                 {
                     var e = new CanOpenNodeExporter_V4();
                     e.export(filepath, edss[0]);

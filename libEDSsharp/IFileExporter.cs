@@ -6,7 +6,7 @@ namespace libEDSsharp
     /// <summary>
     /// Includes all info about a exporter that is needed to show user and call it
     /// </summary>
-    public class ExporterDiscriptor
+    public class ExporterDescriptor
     {
         /// <summary>
         /// Export eds(s) to file(s)
@@ -53,7 +53,7 @@ namespace libEDSsharp
         /// <param name="filetypes">What file extension the exported file(s) will have</param>
         /// <param name="flags">Used to indicated different types of exporters</param>
         /// <param name="func">The function that is exporting to file</param>
-        public ExporterDiscriptor(string description, string[] filetypes, ExporterFlags flags, ExportFunc func)
+        public ExporterDescriptor(string description, string[] filetypes, ExporterFlags flags, ExportFunc func)
         {
             Description = description;
             Filetypes = filetypes;
@@ -70,6 +70,6 @@ namespace libEDSsharp
         /// Fetches all the different fileexporter types the class supports
         /// </summary>
         /// <returns>List of the different exporters the class supports</returns>
-        ExporterDiscriptor[] GetExporters();
+        ExporterDescriptor[] GetExporters();
     }
 }
