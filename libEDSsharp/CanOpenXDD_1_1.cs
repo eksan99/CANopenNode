@@ -57,16 +57,20 @@ namespace libEDSsharp
                     var e = new CanOpenXDD_1_1();
                     e.WriteXML(filepath,edss[0],false,true);
                 }),
-                new ExporterDescriptor("CanOpen XPD v1.1", new string[] { ".xpd" }, ExporterDescriptor.ExporterFlags.MultipleNodeSupport, delegate (string filepath, List<EDSsharp> edss)
-                {
-                    var e = new CanOpenXDD_1_1();
-                    //What is commissioned .xpd extension??
-                    e.WriteMultiXML(filepath,edss,false);
-                }),
                 new ExporterDescriptor("CanOpen XDC v1.1", new string[] { ".xdc" }, 0, delegate (string filepath, List<EDSsharp> edss)
                 {
                     var e = new CanOpenXDD_1_1();
                     e.WriteXML(filepath,edss[0],true,true);
+                }),
+                new ExporterDescriptor("CanOpen Network XPD v1.1", new string[] { ".nxpd" }, ExporterDescriptor.ExporterFlags.MultipleNodeSupport, delegate (string filepath, List<EDSsharp> edss)
+                {
+                    var e = new CanOpenXDD_1_1();
+                    e.WriteMultiXML(filepath,edss,false);
+                }),
+                new ExporterDescriptor("CanOpen Network XDC v1.1", new string[] { ".nxdc" }, ExporterDescriptor.ExporterFlags.MultipleNodeSupport, delegate (string filepath, List<EDSsharp> edss)
+                {
+                    var e = new CanOpenXDD_1_1();
+                    e.WriteMultiXML(filepath,edss,true);
                 })
             };
         }

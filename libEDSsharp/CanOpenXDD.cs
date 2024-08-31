@@ -45,7 +45,7 @@ namespace libEDSsharp
                     var e = new CanOpenXDD();
                     e.writeXML(filepath,edss[0]);
                 }),
-                new ExporterDescriptor("CanOpen XPD v1.0", new string[] { ".xpd" }, ExporterDescriptor.ExporterFlags.MultipleNodeSupport, delegate (string filepath, List<EDSsharp> edss)
+                new ExporterDescriptor("CanOpen Network v1.0", new string[] { ".nxdd" }, ExporterDescriptor.ExporterFlags.MultipleNodeSupport, delegate (string filepath, List<EDSsharp> edss)
                 {
                     var e = new CanOpenXDD();
                     e.writeMultiXML(filepath,edss);
