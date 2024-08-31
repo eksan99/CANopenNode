@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using Xunit;
 
@@ -51,15 +52,15 @@ namespace Tests
         public void MultipleExporterByExtensionPossibleWithoutType()
         {
             //this should fail
-            RunEDSSharp("--infile minimal_project.xdd --outfile file.xpd");
-            string[] files = Directory.GetFiles(".", "file.xpd");
+            RunEDSSharp("--infile minimal_project.xdd --outfile file.xdd");
+            string[] files = Directory.GetFiles(".", "file.xdd");
             Assert.Empty(files);
         }
         [Fact]
         public void MultipleExporterByExtensionPossibleWithType()
         {
-            RunEDSSharp("--type CanOpenXPDv1.0 --infile minimal_project.xdd --outfile file.xpd");
-            string[] files = Directory.GetFiles(".", "file.xpd");
+            RunEDSSharp("--type CanOpenXDDv1.1 --infile minimal_project.xdd --outfile file.nxdd");
+            string[] files = Directory.GetFiles(".", "file.nxdd");
             Assert.Single(files);
         }
     }
